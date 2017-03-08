@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "github.com/go-kit/kit": {
+            "branch": "master"
+        }
+    }
+}

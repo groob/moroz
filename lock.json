@@ -1,0 +1,79 @@
+{
+    "memo": "e8e16180a1501b2d6c026119e81ae561492bbb8b2badc2a47f60ad19c8d81b58",
+    "projects": [
+        {
+            "name": "github.com/BurntSushi/toml",
+            "version": "v0.2.0",
+            "revision": "bbd5bb678321a0d6e58f1099321dfa73391c1b6f",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/go-kit/kit",
+            "branch": "master",
+            "revision": "fadad6fffe0466b19df9efd9acde5c9a52df5fa4",
+            "packages": [
+                "endpoint",
+                "log",
+                "transport/http"
+            ]
+        },
+        {
+            "name": "github.com/go-logfmt/logfmt",
+            "version": "v0.3.0",
+            "revision": "390ab7935ee28ec6b286364bba9b4dd6410cb3d5",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/go-stack/stack",
+            "version": "v1.5.2",
+            "revision": "100eb0c0a9c5b306ca2fb4f165df21d80ada4b82",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/gorilla/context",
+            "version": "v1.1",
+            "revision": "1ea25387ff6f684839d82767c1733ff4d4d15d0a",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/gorilla/mux",
+            "version": "v1.3.0",
+            "revision": "392c28fe23e1c45ddba891b0320b3b5df220beea",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/kr/logfmt",
+            "branch": "master",
+            "revision": "b84e30acd515aadc4b783ad4ff83aff3299bdfe0",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "golang.org/x/net",
+            "branch": "master",
+            "revision": "d379faa25cbdc04d653984913a2ceb43b0bc46d7",
+            "packages": [
+                "context/ctxhttp"
+            ]
+        },
+        {
+            "name": "gopkg.in/natefinch/lumberjack.v2",
+            "branch": "v2.0",
+            "revision": "dd45e6a67c53f673bb49ca8a001fd3a63ceb640e",
+            "packages": [
+                "."
+            ]
+        }
+    ]
+}

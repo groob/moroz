@@ -1,0 +1,106 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"net/http"
+	"os"
+
+	stdlog "log"
+
+	"github.com/go-kit/kit/log"
+	"github.com/groob/moroz/moroz"
+	"github.com/groob/moroz/santaconfig"
+)
+
+const openSSLBash = `
+Looks like you're missing a TLS certifacte and private key. You can quickly generate one 
+by using the commands below:
+
+openssl genrsa -out server.key 2048
+openssl rsa -in server.key -out server.key
+openssl req -sha256 -new -key server.key -out server.csr -subj "/CN=santa"
+openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
+rm -f server.csr
+
+Add the santa CN to your hosts file.
+
+sudo echo "127.0.0.1 santa" >> /etc/hosts
+
+
+You also will need to configure santa:
+
+sudo launchctl unload -w /Library/LaunchDaemons/com.google.santad.plist 
+sudo defaults write /var/db/santa/config.plist SyncBaseURL https://santa:8080/v1/santa/
+sudo defaults write /var/db/santa/config.plist ServerAuthRootsFile $(pwd)/server.crt
+sudo launchctl load -w /Library/LaunchDaemons/com.google.santad.plist
+
+
+The latest version of santa is available on the github repo page:
+	https://github.com/google/santa/releases
+`
+
+var version = "unknown"
+
+func main() {
+	var (
+		flTLSCert = flag.String("tls-cert", envString("MOROZ_TLS_CERT", "server.crt"), "path to TLS certificate")
+		flTLSKey  = flag.String("tls-key", envString("MOROZ_TLS_KEY", "server.key"), "path to TLS private key")
+		flAddr    = flag.String("http-addr", envString("MOROZ_HTTP_ADDRESS", ":8080"), "http address ex: -http-addr=:8080")
+		flConfigs = flag.String("configs", envString("MOROZ_CONFIGS", "../../configs"), "path to config folder")
+		flEvents  = flag.String("event-logfile", envString("MOROZ_EVENTLOG_FILE", "/tmp/santa_events"), "path to file for saving uploaded events")
+		flVersion = flag.Bool("version", false, "print version information")
+	)
+	flag.Parse()
+
+	if *flVersion {
+		fmt.Printf("moroz version %s\n", version)
+		return
+	}
+
+	if _, err := os.Stat(*flTLSCert); os.IsNotExist(err) {
+		fmt.Println(openSSLBash)
+		os.Exit(2)
+	}
+
+	if !validateConfigExists(*flConfigs) {
+		fmt.Println("you need to provide at least a 'global.toml' configuration file in the configs folder. See the configs folder in the git repo for an example")
+		os.Exit(2)
+	}
+
+	repo := santaconfig.NewFileRepo(*flConfigs)
+	svc, err := moroz.NewService(repo, *flEvents)
+	if err != nil {
+		stdlog.Fatal(err)
+	}
+	logger := log.NewLogfmtLogger(os.Stderr)
+	h := moroz.MakeAPIHandler(svc, logger)
+
+	http.Handle("/v1/santa/", h)
+
+	go func() { fmt.Println("started server") }()
+	stdlog.Fatal(http.ListenAndServeTLS(*flAddr,
+		*flTLSCert,
+		*flTLSKey,
+		nil))
+}
+
+func validateConfigExists(configsPath string) bool {
+	var hasConfig = true
+	if _, err := os.Stat(configsPath); os.IsNotExist(err) {
+		hasConfig = false
+	}
+	if _, err := os.Stat(configsPath + "/global.toml"); os.IsNotExist(err) {
+		hasConfig = false
+	}
+	if !hasConfig {
+	}
+	return hasConfig
+}
+
+func envString(key, def string) string {
+	if env, ok := os.LookupEnv(key); ok {
+		return env
+	}
+	return def
+}
