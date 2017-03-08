@@ -8,6 +8,8 @@ Moroz is a server for the [Santa](https://github.com/google/santa) project.
 
 > Santa is a project of Google's Macintosh Operations Team.
 
+See this [short video](https://www.youtube.com/watch?v=3w3_bcJYWj0) for a demo.
+
 # Configurations
 
 Moroz uses [TOML](https://github.com/toml-lang/toml#example) rule files to specify configuration for Santa.
