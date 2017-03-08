@@ -130,3 +130,6 @@ Start moroz:
 Assumes you have the `./server.crt` and `./server.key` files.
 
 ```moroz -configs /path/to/configs/folder```
+
+---
+moroz icon by [Souvik Bhattacharjee](https://thenounproject.com/souvik502/)from the [Noun Project](https://thenounproject.com/).
