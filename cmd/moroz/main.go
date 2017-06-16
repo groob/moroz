@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"os"
 
 	stdlog "log"
@@ -44,12 +47,13 @@ var version = "unknown"
 
 func main() {
 	var (
-		flTLSCert = flag.String("tls-cert", envString("MOROZ_TLS_CERT", "server.crt"), "path to TLS certificate")
-		flTLSKey  = flag.String("tls-key", envString("MOROZ_TLS_KEY", "server.key"), "path to TLS private key")
-		flAddr    = flag.String("http-addr", envString("MOROZ_HTTP_ADDRESS", ":8080"), "http address ex: -http-addr=:8080")
-		flConfigs = flag.String("configs", envString("MOROZ_CONFIGS", "../../configs"), "path to config folder")
-		flEvents  = flag.String("event-logfile", envString("MOROZ_EVENTLOG_FILE", "/tmp/santa_events"), "path to file for saving uploaded events")
-		flVersion = flag.Bool("version", false, "print version information")
+		flTLSCert   = flag.String("tls-cert", envString("MOROZ_TLS_CERT", "server.crt"), "path to TLS certificate")
+		flTLSKey    = flag.String("tls-key", envString("MOROZ_TLS_KEY", "server.key"), "path to TLS private key")
+		flAddr      = flag.String("http-addr", envString("MOROZ_HTTP_ADDRESS", ":8080"), "http address ex: -http-addr=:8080")
+		flConfigs   = flag.String("configs", envString("MOROZ_CONFIGS", "../../configs"), "path to config folder")
+		flEvents    = flag.String("event-logfile", envString("MOROZ_EVENTLOG_FILE", "/tmp/santa_events"), "path to file for saving uploaded events")
+		flVersion   = flag.Bool("version", false, "print version information")
+		flHTTPDebug = flag.Bool("http-debug", false, "enable debug for http(dumps full request)")
 	)
 	flag.Parse()
 
@@ -75,6 +79,9 @@ func main() {
 	}
 	logger := log.NewLogfmtLogger(os.Stderr)
 	h := moroz.MakeAPIHandler(svc, logger)
+	if *flHTTPDebug {
+		h = debugHTTPmiddleware(h)
+	}
 
 	http.Handle("/v1/santa/", h)
 
@@ -103,4 +110,19 @@ func envString(key, def string) string {
 		return env
 	}
 	return def
+}
+
+func debugHTTPmiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body := io.TeeReader(r.Body, os.Stderr)
+		r.Body = ioutil.NopCloser(body)
+		out, err := httputil.DumpRequest(r, true)
+		if err != nil {
+			stdlog.Println(err)
+		}
+		fmt.Println("")
+		fmt.Println(string(out))
+		fmt.Println("")
+		next.ServeHTTP(w, r)
+	})
 }
