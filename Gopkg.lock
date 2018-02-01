@@ -48,6 +48,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/micromdm/go4"
+  packages = ["version"]
+  revision = "deded5397014104c618443dde9408a94c8232e21"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -64,6 +70,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "857b8c1288d39a6241b33c8351d37acca98e7ad1e3e5001e3373a442d8fa8a61"
+  inputs-digest = "925ebd687b4f749e2441c60e3ce988643ee45bd97dec77a63c17328ab301c571"
   solver-name = "gps-cdcl"
   solver-version = 1

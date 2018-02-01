@@ -14,6 +14,7 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/groob/moroz/moroz"
 	"github.com/groob/moroz/santaconfig"
+	"github.com/micromdm/go4/version"
 )
 
 const openSSLBash = `
@@ -43,8 +44,6 @@ The latest version of santa is available on the github repo page:
 	https://github.com/google/santa/releases
 `
 
-var version = "unknown"
-
 func main() {
 	var (
 		flTLSCert   = flag.String("tls-cert", envString("MOROZ_TLS_CERT", "server.crt"), "path to TLS certificate")
@@ -58,7 +57,7 @@ func main() {
 	flag.Parse()
 
 	if *flVersion {
-		fmt.Printf("moroz version %s\n", version)
+		version.PrintFull()
 		return
 	}
 
