@@ -1,13 +1,19 @@
 package moroz
 
 import (
-	"context"
 	"io"
 
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 
+	"github.com/go-kit/kit/endpoint"
 	"github.com/groob/moroz/santa"
 )
+
+type SantaService struct {
+	global      *santa.Config
+	repo        santa.Datastore
+	eventWriter io.Writer
+}
 
 func NewService(ds santa.Datastore, eventPath string) (*SantaService, error) {
 	global, err := ds.Config("global")
@@ -19,7 +25,6 @@ func NewService(ds santa.Datastore, eventPath string) (*SantaService, error) {
 		repo:        ds,
 		eventWriter: santaEventWriter(eventPath),
 	}, nil
-
 }
 
 func santaEventWriter(path string) io.Writer {
@@ -29,52 +34,16 @@ func santaEventWriter(path string) io.Writer {
 	return events
 }
 
-type SantaService struct {
-	global      *santa.Config
-	repo        santa.Datastore
-	eventWriter io.Writer
+type Endpoints struct {
+	PreflightEndpoint    endpoint.Endpoint
+	RuleDownloadEndpoint endpoint.Endpoint
+	EventUploadEndpoint  endpoint.Endpoint
 }
 
-func (svc *SantaService) Preflight(ctx context.Context, machineID string, p santa.PreflightPayload) (*santa.Preflight, error) {
-	config := svc.config(machineID)
-	pre := &santa.Preflight{
-		ClientMode:     toClientMode(config.ClientMode),
-		BlacklistRegex: config.BlacklistRegex,
-		WhitelistRegex: config.WhitelistRegex,
-		BatchSize:      config.BatchSize,
+func MakeServerEndpoints(svc santa.Service) Endpoints {
+	return Endpoints{
+		PreflightEndpoint:    makePreflightEndpoint(svc),
+		RuleDownloadEndpoint: makeRuleDownloadEndpoint(svc),
+		EventUploadEndpoint:  makeEventUploadEndpoint(svc),
 	}
-	return pre, nil
-}
-
-func (svc *SantaService) RuleDownload(ctx context.Context, machineID string) ([]santa.Rule, error) {
-	config := svc.config(machineID)
-	return config.Rules, nil
-}
-
-func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, body io.ReadCloser) error {
-	_, err := io.Copy(svc.eventWriter, body)
-	defer body.Close()
-	return err
-}
-
-func (svc *SantaService) config(machineID string) *santa.Config {
-	var config *santa.Config
-	var err error
-	config, err = svc.repo.Config(machineID)
-	if err != nil {
-		config = svc.global
-	}
-	return config
-}
-
-func toClientMode(from string) santa.ClientMode {
-	switch from {
-	case "MONITOR":
-		return santa.Monitor
-	case "LOCKDOWN":
-		return santa.Lockdown
-	default:
-		return santa.Monitor
-	}
-
 }

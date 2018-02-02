@@ -9,9 +9,12 @@ import (
 	"net/http/httputil"
 	"os"
 
+	"github.com/groob/moroz/santa"
+
 	stdlog "log"
 
 	"github.com/go-kit/kit/log"
+	"github.com/gorilla/mux"
 	"github.com/groob/moroz/moroz"
 	"github.com/groob/moroz/santaconfig"
 	"github.com/micromdm/go4/version"
@@ -71,24 +74,36 @@ func main() {
 		os.Exit(2)
 	}
 
-	repo := santaconfig.NewFileRepo(*flConfigs)
-	svc, err := moroz.NewService(repo, *flEvents)
-	if err != nil {
-		stdlog.Fatal(err)
-	}
 	logger := log.NewLogfmtLogger(os.Stderr)
-	h := moroz.MakeAPIHandler(svc, logger)
-	if *flHTTPDebug {
-		h = debugHTTPmiddleware(h)
+
+	repo := santaconfig.NewFileRepo(*flConfigs)
+	var svc santa.Service
+	{
+		s, err := moroz.NewService(repo, *flEvents)
+		if err != nil {
+			stdlog.Fatal(err)
+		}
+		svc = s
+		svc = moroz.LoggingMiddleware(logger)(svc)
 	}
 
-	http.Handle("/v1/santa/", h)
+	endpoints := moroz.MakeServerEndpoints(svc)
+
+	var h http.Handler
+	{
+		r := mux.NewRouter()
+		h = r
+		moroz.AddHTTPRoutes(r, endpoints, logger)
+		if *flHTTPDebug {
+			h = debugHTTPmiddleware(h)
+		}
+	}
 
 	go func() { fmt.Println("started server") }()
 	stdlog.Fatal(http.ListenAndServeTLS(*flAddr,
 		*flTLSCert,
 		*flTLSKey,
-		nil))
+		h))
 }
 
 func validateConfigExists(configsPath string) bool {
