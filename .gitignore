@@ -6,3 +6,5 @@ cmd/*/*.key
 cmd/*/*/*.toml
 cmd/*/build/*
 cmd/moroz/moroz
+server.crt
+server.key
