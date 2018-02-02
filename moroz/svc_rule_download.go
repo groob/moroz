@@ -10,18 +10,17 @@ import (
 )
 
 func (svc *SantaService) RuleDownload(ctx context.Context, machineID string) ([]santa.Rule, error) {
-	config := svc.config(machineID)
-	return config.Rules, nil
+	config, err := svc.config(machineID)
+	return config.Rules, err
 }
 
-func (svc *SantaService) config(machineID string) *santa.Config {
-	var config *santa.Config
-	var err error
-	config, err = svc.repo.Config(machineID)
-	if err != nil {
-		config = svc.global
+func (svc *SantaService) config(machineID string) (*santa.Config, error) {
+	// try the machine ID config first, and if that fails return the global config instead
+	if config, err := svc.repo.Config(machineID); err == nil {
+		return config, nil
 	}
-	return config
+	config, err := svc.repo.Config("global")
+	return config, err
 }
 
 type ruleRequest struct {

@@ -12,7 +12,10 @@ import (
 )
 
 func (svc *SantaService) Preflight(ctx context.Context, machineID string, p santa.PreflightPayload) (*santa.Preflight, error) {
-	config := svc.config(machineID)
+	config, err := svc.config(machineID)
+	if err != nil {
+		return nil, err
+	}
 	pre := &santa.Preflight{
 		ClientMode:     toClientMode(config.ClientMode),
 		BlacklistRegex: config.BlacklistRegex,
