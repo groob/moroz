@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build-go1.9:
+    docker:
+        - image: golang:1.9
+
+    working_directory: /go/src/github.com/groob/moroz
+    steps:
+      - checkout
+      - run: make deps
+      - run: make test
+      - run: make
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build-go1.9
+
