@@ -56,6 +56,7 @@ func main() {
 		flEvents    = flag.String("event-logfile", envString("MOROZ_EVENTLOG_FILE", "/tmp/santa_events"), "path to file for saving uploaded events")
 		flVersion   = flag.Bool("version", false, "print version information")
 		flHTTPDebug = flag.Bool("http-debug", false, "enable debug for http(dumps full request)")
+		flUseTLS    = flag.Bool("use-tls", true, "I promise I terminated TLS elsewhere when changing this")
 	)
 	flag.Parse()
 
@@ -64,7 +65,7 @@ func main() {
 		return
 	}
 
-	if _, err := os.Stat(*flTLSCert); os.IsNotExist(err) {
+	if _, err := os.Stat(*flTLSCert); *flUseTLS && os.IsNotExist(err) {
 		fmt.Println(openSSLBash)
 		os.Exit(2)
 	}
@@ -100,10 +101,15 @@ func main() {
 	}
 
 	go func() { fmt.Println("started server") }()
-	stdlog.Fatal(http.ListenAndServeTLS(*flAddr,
-		*flTLSCert,
-		*flTLSKey,
-		h))
+
+	if *flUseTLS {
+		stdlog.Fatal(http.ListenAndServeTLS(*flAddr,
+			*flTLSCert,
+			*flTLSKey,
+			h))
+	} else {
+		stdlog.Fatal(http.ListenAndServe(*flAddr, h))
+	}
 }
 
 func validateConfigExists(configsPath string) bool {
