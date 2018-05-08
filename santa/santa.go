@@ -2,13 +2,12 @@ package santa
 
 import (
 	"context"
-	"io"
 )
 
 type Service interface {
 	Preflight(ctx context.Context, machineID string, p PreflightPayload) (*Preflight, error)
 	RuleDownload(ctx context.Context, machineID string) ([]Rule, error)
-	UploadEvent(ctx context.Context, machineID string, body io.ReadCloser) error
+	UploadEvent(ctx context.Context, machineID string, body EventsList) error
 }
 
 type Datastore interface {

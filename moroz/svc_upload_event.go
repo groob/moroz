@@ -3,7 +3,7 @@ package moroz
 import (
 	"compress/zlib"
 	"context"
-	"io"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -11,15 +11,24 @@ import (
 	"github.com/groob/moroz/santa"
 )
 
-func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, body io.ReadCloser) error {
-	_, err := io.Copy(svc.eventWriter, body)
-	defer body.Close()
-	return err
+func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events santa.EventsList) error {
+	when := time.Now().UTC().Format(time.RFC3339)
+	for _, event := range events.Events {
+		event_line := santa.EventLine{machineID, when, event}
+		b, err := json.Marshal(event_line)
+		if err != nil {
+			// this can't happen?
+			return err
+		}
+		svc.eventWriter.Write(b)
+	}
+	return nil
 }
 
 type eventRequest struct {
 	MachineID string
-	eventBody io.ReadCloser
+	Events    santa.EventsList
+	// eventBody io.ReadCloser
 }
 
 type eventResponse struct {
@@ -31,7 +40,7 @@ func (r eventResponse) Failed() error { return r.Err }
 func makeEventUploadEndpoint(svc santa.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(eventRequest)
-		err := svc.UploadEvent(ctx, req.MachineID, req.eventBody)
+		err := svc.UploadEvent(ctx, req.MachineID, req.Events)
 		if err != nil {
 			return eventResponse{Err: err}, nil
 		}
@@ -48,11 +57,14 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 	if err != nil {
 		return nil, err
 	}
-	req := eventRequest{MachineID: id, eventBody: zr}
+	req := eventRequest{MachineID: id}
+	if err := json.NewDecoder(zr).Decode(&req.Events); err != nil {
+		return nil, err
+	}
 	return req, nil
 }
 
-func (mw logmw) UploadEvent(ctx context.Context, machineID string, body io.ReadCloser) (err error) {
+func (mw logmw) UploadEvent(ctx context.Context, machineID string, body santa.EventsList) (err error) {
 	defer func(begin time.Time) {
 		_ = mw.logger.Log(
 			"method", "UploadEvent",
