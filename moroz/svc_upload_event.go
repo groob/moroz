@@ -20,7 +20,7 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 			// this can't happen?
 			return err
 		}
-		svc.eventWriter.Write(b)
+		svc.eventWriter.Write(append(b, '\n'))
 	}
 	return nil
 }
