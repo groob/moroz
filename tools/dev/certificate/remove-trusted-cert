@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo security remove-trusted-cert -d server.crt

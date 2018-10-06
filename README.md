@@ -101,11 +101,7 @@ Copy the `configs` folder from the repo somewhere locally. It must have the `glo
 Generate a self signed certificate which will be used by santa and the server for communication.
 
 ```
-openssl genrsa -out server.key 2048
-openssl rsa -in server.key -out server.key
-openssl req -sha256 -new -key server.key -out server.csr -subj "/CN=santa"
-openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
-rm -f server.csr
+./tools/dev/certificate/create
 ```
 
 Add the santa CN to your hosts file.
@@ -114,24 +110,26 @@ Add the santa CN to your hosts file.
 sudo echo "127.0.0.1 santa" >> /etc/hosts
 ```
 
+Add the self signed cert to your system roots. 
 
-Install Santa
+```
+./tools/dev/certificate/add-trusted-cert
+```
+
+## Install Santa:
 The latest version of santa is available on the github repo page: https://github.com/google/santa/releases
 
-Configure Santa:
-You will need to provide the `SyncBaseURL` and `ServerAuthRootsFile` settings.
+## Configure Santa:
+You will need to provide the `SyncBaseURL` settings. See the [santa repo](https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/deployment/configuration.md#important) for a complete guide on all the client configuration options.
 
-```
-sudo launchctl unload -w /Library/LaunchDaemons/com.google.santad.plist
-sudo defaults write /var/db/santa/config.plist SyncBaseURL https://santa:8080/v1/santa/
-sudo defaults write /var/db/santa/config.plist ServerAuthRootsFile $(pwd)/server.crt
-sudo launchctl load -w /Library/LaunchDaemons/com.google.santad.plist
-```
+
 
 Start moroz:
 Assumes you have the `./server.crt` and `./server.key` files.
 
-```moroz -configs /path/to/configs/folder```
+```
+moroz -configs /path/to/configs/folder
+```
 
 ---
 moroz icon by [Souvik Bhattacharjee](https://thenounproject.com/souvik502/)from the [Noun Project](https://thenounproject.com/).
