@@ -17,10 +17,12 @@ func (svc *SantaService) Preflight(ctx context.Context, machineID string, p sant
 		return nil, err
 	}
 	pre := &santa.Preflight{
-		ClientMode:     toClientMode(config.ClientMode),
-		BlacklistRegex: config.BlacklistRegex,
-		WhitelistRegex: config.WhitelistRegex,
-		BatchSize:      config.BatchSize,
+		ClientMode:                    toClientMode(config.ClientMode),
+		BlacklistRegex:                config.BlacklistRegex,
+		WhitelistRegex:                config.WhitelistRegex,
+		BatchSize:                     config.BatchSize,
+		EnabledTransitiveWhitelisting: config.EnabledTransitiveWhitelisting,
+		EnableBundles:                 config.EnableBundles,
 	}
 	return pre, nil
 }

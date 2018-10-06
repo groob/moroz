@@ -38,8 +38,10 @@ func (c ClientMode) MarshalJSON() ([]byte, error) {
 }
 
 type Preflight struct {
-	WhitelistRegex string     `json:"whitelist_regex"`
-	BlacklistRegex string     `json:"blacklist_regex"`
-	BatchSize      int        `json:"batch_size"`
-	ClientMode     ClientMode `json:"client_mode"`
+	WhitelistRegex                string     `json:"whitelist_regex"`
+	BlacklistRegex                string     `json:"blacklist_regex"`
+	BatchSize                     int        `json:"batch_size"`
+	ClientMode                    ClientMode `json:"client_mode"`
+	EnableBundles                 bool       `json:"enable_bundles"`
+	EnabledTransitiveWhitelisting bool       `json:"enabled_transitive_whitelisting"`
 }
