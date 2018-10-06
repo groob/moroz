@@ -29,13 +29,13 @@ else
 endif
 
 BUILD_VERSION = "\
-	-X github.com/groob/moroz/vendor/github.com/micromdm/go4/version.appName=${APP_NAME} \
-	-X github.com/groob/moroz/vendor/github.com/micromdm/go4/version.version=${VERSION} \
-	-X github.com/groob/moroz/vendor/github.com/micromdm/go4/version.branch=${BRANCH} \
-	-X github.com/groob/moroz/vendor/github.com/micromdm/go4/version.buildUser=${USER} \
-	-X github.com/groob/moroz/vendor/github.com/micromdm/go4/version.buildDate=${NOW} \
-	-X github.com/groob/moroz/vendor/github.com/micromdm/go4/version.revision=${REVISION} \
-	-X github.com/groob/moroz/vendor/github.com/micromdm/go4/version.goVersion=${GOVERSION}"
+	-X github.com/micromdm/go4/version.appName=${APP_NAME} \
+	-X github.com/micromdm/go4/version.version=${VERSION} \
+	-X github.com/micromdm/go4/version.branch=${BRANCH} \
+	-X github.com/micromdm/go4/version.buildUser=${USER} \
+	-X github.com/micromdm/go4/version.buildDate=${NOW} \
+	-X github.com/micromdm/go4/version.revision=${REVISION} \
+	-X github.com/micromdm/go4/version.goVersion=${GOVERSION}"
 
 
 deps: 
@@ -59,11 +59,11 @@ clean:
 	$(eval APP_NAME = moroz)
 
 moroz: .pre-build .pre-moroz
-	go build -i -o build/$(CURRENT_PLATFORM)/moroz -ldflags ${BUILD_VERSION} ./cmd/moroz
+	go build -o build/$(CURRENT_PLATFORM)/moroz -ldflags ${BUILD_VERSION} ./cmd/moroz
 
 xp-moroz: .pre-build .pre-moroz
-	GOOS=darwin go build -i -o build/darwin/moroz -ldflags ${BUILD_VERSION} ./cmd/moroz
-	GOOS=linux CGO_ENABLED=0 go build -i -o build/linux/moroz  -ldflags ${BUILD_VERSION} ./cmd/moroz
+	GOOS=darwin go build -o build/darwin/moroz -ldflags ${BUILD_VERSION} ./cmd/moroz
+	GOOS=linux CGO_ENABLED=0 go build -o build/linux/moroz  -ldflags ${BUILD_VERSION} ./cmd/moroz
 
 install: .pre-moroz
 	go install -ldflags ${BUILD_VERSION} ./cmd/moroz
