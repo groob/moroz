@@ -1,15 +1,20 @@
+// Package santa defines types for a Santa sync server.
 package santa
 
 import (
 	"github.com/pkg/errors"
 )
 
+// Config represents the combination of the Preflight configuration and Rules
+// for a given MachineID.
 type Config struct {
 	MachineID string `toml:"machine_id,omitempty"`
 	Preflight
 	Rules []Rule `toml:"rules"`
 }
 
+// Rule is a Santa rule.
+// Full documentation: https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/details/rules.md
 type Rule struct {
 	RuleType      RuleType `json:"rule_type" toml:"rule_type"`
 	Policy        Policy   `json:"policy" toml:"policy"`
@@ -17,6 +22,7 @@ type Rule struct {
 	CustomMessage string   `json:"custom_msg,omitempty" toml:"custom_msg,omitempty"`
 }
 
+// Preflight representssync response sent to a Santa client by the sync server.
 type Preflight struct {
 	ClientMode                    ClientMode `json:"client_mode" toml:"client_mode"`
 	BlacklistRegex                string     `json:"blacklist_regex" toml:"blacklist_regex"`
@@ -26,6 +32,7 @@ type Preflight struct {
 	EnabledTransitiveWhitelisting bool       `json:"enabled_transitive_whitelisting" toml:"enabled_transitive_whitelisting"`
 }
 
+// A PreflightPayload represents the request sent by a santa client to the sync server.
 type PreflightPayload struct {
 	OSBuild              string     `json:"os_build"`
 	SantaVersion         string     `json:"santa_version"`
@@ -38,10 +45,16 @@ type PreflightPayload struct {
 	PrimaryUser          string     `json:"primary_user"`
 }
 
+// RuleType represents a Santa rule type.
 type RuleType int
 
 const (
+	// Binary rules use the SHA-256 hash of the entire binary as an identifier.
 	Binary RuleType = iota
+
+	// Certificate rules are formed from the SHA-256 fingerprint of an X.509 leaf signing certificate.
+	// This is a powerful rule type that has a much broader reach than an individual binary rule .
+	// A signing certificate can sign any number of binaries.
 	Certificate
 )
 
@@ -68,11 +81,15 @@ func (r RuleType) MarshalText() ([]byte, error) {
 	}
 }
 
+// Policy represents the Santa Rule Policy.
 type Policy int
 
 const (
 	Blacklist Policy = iota
 	Whitelist
+
+	// WhitelistCompiler is a Transitive Whitelist policy which allows whitelisting binaries created by
+	// a specific compiler. EnabledTransitiveWhitelisting must be set to true in the Preflight first.
 	WhitelistCompiler
 )
 
@@ -103,6 +120,7 @@ func (p Policy) MarshalText() ([]byte, error) {
 	}
 }
 
+// ClientMode specifies which mode the Santa client will evaluate rules in.
 type ClientMode int
 
 const (
