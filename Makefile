@@ -30,13 +30,13 @@ else
 endif
 
 BUILD_VERSION = "\
-	-X github.com/micromdm/go4/version.appName=${APP_NAME} \
-	-X github.com/micromdm/go4/version.version=${VERSION} \
-	-X github.com/micromdm/go4/version.branch=${BRANCH} \
-	-X github.com/micromdm/go4/version.buildUser=${USER} \
-	-X github.com/micromdm/go4/version.buildDate=${NOW} \
-	-X github.com/micromdm/go4/version.revision=${REVISION} \
-	-X github.com/micromdm/go4/version.goVersion=${GOVERSION}"
+	-X github.com/kolide/kit/version.appName=${APP_NAME} \
+	-X github.com/kolide/kit/version.version=${VERSION} \
+	-X github.com/kolide/kit/version.branch=${BRANCH} \
+	-X github.com/kolide/kit/version.buildUser=${USER} \
+	-X github.com/kolide/kit/version.buildDate=${NOW} \
+	-X github.com/kolide/kit/version.revision=${REVISION} \
+	-X github.com/kolide/kit/version.goVersion=${GOVERSION}"
 
 
 gomodcheck: 

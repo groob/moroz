@@ -10,10 +10,12 @@ github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f h1:9oNbS1z4rVpbnkH
 github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
 github.com/gorilla/mux v1.6.1 h1:KOwqsTYZdeuMacU7CxjMNYEKeBvLbxW+psodrbcEa3A=
 github.com/gorilla/mux v1.6.1/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
+github.com/kolide/kit v0.0.0-20180912215818-0c28f72eb2b0 h1:8UB0NJBoB/lN2O9zG9+U2klyYE0UhvN2Zrn7HBjhwNY=
+github.com/kolide/kit v0.0.0-20180912215818-0c28f72eb2b0/go.mod h1:N3Yv8okDVC/5qZhPA9uxVYRfkp4mD2vrlQiSCWlNCpg=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 h1:T+h1c/A9Gawja4Y9mFVWj2vyii2bbUNDw3kt9VxK2EY=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
-github.com/micromdm/go4 v0.0.0-20171021081444-deded5397014 h1:8Za9WLoGTSU96EAWFziRCiFmQuBAC6xj9/dKiN45LHw=
-github.com/micromdm/go4 v0.0.0-20171021081444-deded5397014/go.mod h1:8EzTEgA3q2ZdZotWXs1bWnFCXuaFHU0+jDNZbHlwduM=
+github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
+github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 golang.org/x/net v0.0.0-20180124060956-0ed95abb35c4 h1:BLERX6fu5dNMZcaGP2RzbrDZpHQbDkAoG9oiTRXbWr0=
