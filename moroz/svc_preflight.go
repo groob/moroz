@@ -16,26 +16,8 @@ func (svc *SantaService) Preflight(ctx context.Context, machineID string, p sant
 	if err != nil {
 		return nil, err
 	}
-	pre := &santa.Preflight{
-		ClientMode:                    toClientMode(config.ClientMode),
-		BlacklistRegex:                config.BlacklistRegex,
-		WhitelistRegex:                config.WhitelistRegex,
-		BatchSize:                     config.BatchSize,
-		EnabledTransitiveWhitelisting: config.EnabledTransitiveWhitelisting,
-		EnableBundles:                 config.EnableBundles,
-	}
-	return pre, nil
-}
-
-func toClientMode(from string) santa.ClientMode {
-	switch from {
-	case "MONITOR":
-		return santa.Monitor
-	case "LOCKDOWN":
-		return santa.Lockdown
-	default:
-		return santa.Monitor
-	}
+	pre := config.Preflight
+	return &pre, nil
 }
 
 type preflightRequest struct {
