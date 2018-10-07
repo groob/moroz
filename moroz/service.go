@@ -1,6 +1,7 @@
 package moroz
 
 import (
+	"context"
 	"io"
 
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
@@ -9,13 +10,18 @@ import (
 	"github.com/groob/moroz/santa"
 )
 
+type ConfigStore interface {
+	AllConfigs() ([]santa.Config, error)
+	Config(machineID string) (santa.Config, error)
+}
+
 type SantaService struct {
-	global      *santa.Config
-	repo        santa.Datastore
+	global      santa.Config
+	repo        ConfigStore
 	eventWriter io.Writer
 }
 
-func NewService(ds santa.Datastore, eventPath string) (*SantaService, error) {
+func NewService(ds ConfigStore, eventPath string) (*SantaService, error) {
 	global, err := ds.Config("global")
 	if err != nil {
 		return nil, err
@@ -25,6 +31,12 @@ func NewService(ds santa.Datastore, eventPath string) (*SantaService, error) {
 		repo:        ds,
 		eventWriter: santaEventWriter(eventPath),
 	}, nil
+}
+
+type Service interface {
+	Preflight(ctx context.Context, machineID string, p santa.PreflightPayload) (*santa.Preflight, error)
+	RuleDownload(ctx context.Context, machineID string) ([]santa.Rule, error)
+	UploadEvent(ctx context.Context, machineID string, body io.ReadCloser) error
 }
 
 func santaEventWriter(path string) io.Writer {
@@ -40,7 +52,7 @@ type Endpoints struct {
 	EventUploadEndpoint  endpoint.Endpoint
 }
 
-func MakeServerEndpoints(svc santa.Service) Endpoints {
+func MakeServerEndpoints(svc Service) Endpoints {
 	return Endpoints{
 		PreflightEndpoint:    makePreflightEndpoint(svc),
 		RuleDownloadEndpoint: makeRuleDownloadEndpoint(svc),

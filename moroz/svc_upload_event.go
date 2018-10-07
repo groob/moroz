@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/endpoint"
-	"github.com/groob/moroz/santa"
 )
 
 func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, body io.ReadCloser) error {
@@ -28,7 +27,7 @@ type eventResponse struct {
 
 func (r eventResponse) Failed() error { return r.Err }
 
-func makeEventUploadEndpoint(svc santa.Service) endpoint.Endpoint {
+func makeEventUploadEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(eventRequest)
 		err := svc.UploadEvent(ctx, req.MachineID, req.eventBody)

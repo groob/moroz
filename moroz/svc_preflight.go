@@ -50,7 +50,7 @@ type preflightResponse struct {
 
 func (r preflightResponse) Failed() error { return r.Err }
 
-func makePreflightEndpoint(svc santa.Service) endpoint.Endpoint {
+func makePreflightEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(preflightRequest)
 		preflight, err := svc.Preflight(ctx, req.MachineID, req.payload)

@@ -2,18 +2,17 @@ package moroz
 
 import (
 	"github.com/go-kit/kit/log"
-	"github.com/groob/moroz/santa"
 )
 
-type Middleware func(santa.Service) santa.Service
+type Middleware func(Service) Service
 
 func LoggingMiddleware(logger log.Logger) Middleware {
-	return func(next santa.Service) santa.Service {
+	return func(next Service) Service {
 		return logmw{logger, next}
 	}
 }
 
 type logmw struct {
 	logger log.Logger
-	next   santa.Service
+	next   Service
 }

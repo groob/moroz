@@ -14,7 +14,7 @@ func (svc *SantaService) RuleDownload(ctx context.Context, machineID string) ([]
 	return config.Rules, err
 }
 
-func (svc *SantaService) config(machineID string) (*santa.Config, error) {
+func (svc *SantaService) config(machineID string) (santa.Config, error) {
 	// try the machine ID config first, and if that fails return the global config instead
 	if config, err := svc.repo.Config(machineID); err == nil {
 		return config, nil
@@ -34,7 +34,7 @@ type rulesResponse struct {
 
 func (r rulesResponse) Failed() error { return r.Err }
 
-func makeRuleDownloadEndpoint(svc santa.Service) endpoint.Endpoint {
+func makeRuleDownloadEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(ruleRequest)
 		rules, err := svc.RuleDownload(ctx, req.MachineID)

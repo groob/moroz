@@ -9,8 +9,6 @@ import (
 	"net/http/httputil"
 	"os"
 
-	"github.com/groob/moroz/santa"
-
 	stdlog "log"
 
 	"github.com/go-kit/kit/log"
@@ -78,7 +76,7 @@ func main() {
 	logger := log.NewLogfmtLogger(os.Stderr)
 
 	repo := santaconfig.NewFileRepo(*flConfigs)
-	var svc santa.Service
+	var svc moroz.Service
 	{
 		s, err := moroz.NewService(repo, *flEvents)
 		if err != nil {

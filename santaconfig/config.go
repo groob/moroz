@@ -1,9 +1,7 @@
 package santaconfig
 
 import (
-	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,11 +9,12 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/groob/moroz/santa"
+	"github.com/pkg/errors"
 )
 
 func NewFileRepo(path string) *FileRepo {
 	repo := FileRepo{
-		configIndex: make(map[string]*santa.Config),
+		configIndex: make(map[string]santa.Config),
 		configPath:  path,
 	}
 	return &repo
@@ -23,53 +22,49 @@ func NewFileRepo(path string) *FileRepo {
 
 type FileRepo struct {
 	mtx         sync.RWMutex
-	configIndex map[string]*santa.Config
+	configIndex map[string]santa.Config
 	configPath  string
 }
 
-func (f *FileRepo) updateIndex(configs *santa.ConfigCollection) {
-	f.configIndex = make(map[string]*santa.Config, len(*configs))
-	for _, conf := range *configs {
+func (f *FileRepo) updateIndex(configs []santa.Config) {
+	f.configIndex = make(map[string]santa.Config, len(configs))
+	for _, conf := range configs {
 		f.configIndex[conf.MachineID] = conf
 	}
 }
 
-func (f *FileRepo) AllConfigs() (*santa.ConfigCollection, error) {
+func (f *FileRepo) AllConfigs() ([]santa.Config, error) {
 	f.mtx.Lock()
 	defer f.mtx.Unlock()
 
-	var configs santa.ConfigCollection
-	err := loadConfigs(f.configPath, &configs)
+	configs, err := loadConfigs(f.configPath)
 	if err != nil {
 		return nil, err
 	}
-	f.updateIndex(&configs)
-	return &configs, nil
+	f.updateIndex(configs)
+	return configs, nil
 }
 
-func (f *FileRepo) Config(machineID string) (*santa.Config, error) {
+func (f *FileRepo) Config(machineID string) (santa.Config, error) {
 	f.mtx.Lock()
 	defer f.mtx.Unlock()
 
-	var configs santa.ConfigCollection
-	err := loadConfigs(f.configPath, &configs)
+	var conf santa.Config
+	configs, err := loadConfigs(f.configPath)
 	if err != nil {
-		return nil, err
+		return conf, errors.Wrapf(err, "loading config for machineID %q", machineID)
 	}
-	f.updateIndex(&configs)
+	f.updateIndex(configs)
 	conf, ok := f.configIndex[machineID]
 	if !ok {
-		return nil, errors.New("configuration not found")
+		return conf, errors.Errorf("configuration %q not found", machineID)
 	}
 	return conf, nil
 }
 
-func loadConfigs(path string, configs *santa.ConfigCollection) error {
-	return filepath.Walk(path, walkConfigs(configs))
-}
-
-func walkConfigs(configs *santa.ConfigCollection) filepath.WalkFunc {
-	return func(path string, info os.FileInfo, err error) error {
+func loadConfigs(path string) ([]santa.Config, error) {
+	var configs []santa.Config
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -84,14 +79,14 @@ func walkConfigs(configs *santa.ConfigCollection) filepath.WalkFunc {
 			var conf santa.Config
 			err := toml.Unmarshal(file, &conf)
 			if err != nil {
-				log.Printf("failed to decode %v, skipping \n", info.Name())
-				return nil
+				return errors.Wrapf(err, "failed to decode %v, skipping \n", info.Name())
 			}
 			name := info.Name()
 			conf.MachineID = strings.TrimSuffix(name, filepath.Ext(name))
-			*configs = append(*configs, &conf)
+			configs = append(configs, conf)
 			return nil
 		}
 		return nil
-	}
+	})
+	return configs, errors.Wrapf(err, "loading configs from path")
 }
