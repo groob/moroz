@@ -1,6 +1,7 @@
 package santaconfig
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -33,7 +34,7 @@ func (f *FileRepo) updateIndex(configs []santa.Config) {
 	}
 }
 
-func (f *FileRepo) AllConfigs() ([]santa.Config, error) {
+func (f *FileRepo) AllConfigs(ctx context.Context) ([]santa.Config, error) {
 	f.mtx.Lock()
 	defer f.mtx.Unlock()
 
@@ -45,7 +46,7 @@ func (f *FileRepo) AllConfigs() ([]santa.Config, error) {
 	return configs, nil
 }
 
-func (f *FileRepo) Config(machineID string) (santa.Config, error) {
+func (f *FileRepo) Config(ctx context.Context, machineID string) (santa.Config, error) {
 	f.mtx.Lock()
 	defer f.mtx.Unlock()
 

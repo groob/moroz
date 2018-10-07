@@ -11,8 +11,8 @@ import (
 )
 
 type ConfigStore interface {
-	AllConfigs() ([]santa.Config, error)
-	Config(machineID string) (santa.Config, error)
+	AllConfigs(ctx context.Context) ([]santa.Config, error)
+	Config(ctx context.Context, machineID string) (santa.Config, error)
 }
 
 type SantaService struct {
@@ -22,7 +22,7 @@ type SantaService struct {
 }
 
 func NewService(ds ConfigStore, eventPath string) (*SantaService, error) {
-	global, err := ds.Config("global")
+	global, err := ds.Config(context.TODO(), "global")
 	if err != nil {
 		return nil, err
 	}
