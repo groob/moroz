@@ -12,19 +12,20 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/endpoint"
-	"github.com/groob/moroz/santa"
 	"github.com/pkg/errors"
+
+	"github.com/groob/moroz/santa"
 )
 
 func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error {
 	for _, ev := range events {
 		eventDir := filepath.Join(svc.eventDir, ev.FileSHA, machineID)
-		eventPath := filepath.Join(eventDir, fmt.Sprintf("%f.json", ev.UnixTime))
-		if err := os.MkdirAll(eventDir, 0777); err != nil {
+		if err := os.MkdirAll(eventDir, 0700); err != nil {
 			return errors.Wrapf(err, "create event directory %s", eventDir)
 		}
 
-		if err := ioutil.WriteFile(eventPath, ev.Content, 0777); err != nil {
+		eventPath := filepath.Join(eventDir, fmt.Sprintf("%f.json", ev.UnixTime))
+		if err := ioutil.WriteFile(eventPath, ev.Content, 0644); err != nil {
 			return errors.Wrapf(err, "write event to path %s", eventPath)
 		}
 	}
@@ -37,7 +38,7 @@ type eventRequest struct {
 }
 
 type eventResponse struct {
-	Err error `json:"error,omitempty"`
+	Err error
 }
 
 func (r eventResponse) Failed() error { return r.Err }
