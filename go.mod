@@ -12,6 +12,4 @@ require (
 	github.com/oklog/run v1.0.0
 	github.com/pkg/errors v0.8.0
 	golang.org/x/net v0.0.0-20180124060956-0ed95abb35c4 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0-20170531160350-a96e63847dc3
-	gopkg.in/yaml.v2 v2.2.1 // indirect
 )

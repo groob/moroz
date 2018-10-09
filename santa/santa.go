@@ -2,6 +2,8 @@
 package santa
 
 import (
+	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
@@ -43,6 +45,13 @@ type PreflightPayload struct {
 	ClientMode           ClientMode `json:"client_mode"`
 	SerialNumber         string     `json:"serial_number"`
 	PrimaryUser          string     `json:"primary_user"`
+}
+
+// EventPayload represents derived metadata for events uploaded with the UploadEvent endpoint.
+type EventPayload struct {
+	FileSHA  string          `json:"file_sha256"`
+	UnixTime float64         `json:"execution_time"`
+	Content  json.RawMessage `json:"-"`
 }
 
 // RuleType represents a Santa rule type.

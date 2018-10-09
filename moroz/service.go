@@ -2,9 +2,7 @@ package moroz
 
 import (
 	"context"
-	"io"
-
-	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+	"time"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/groob/moroz/santa"
@@ -16,34 +14,29 @@ type ConfigStore interface {
 }
 
 type SantaService struct {
-	global      santa.Config
-	repo        ConfigStore
-	eventWriter io.Writer
+	global   santa.Config
+	repo     ConfigStore
+	eventDir string
 }
 
-func NewService(ds ConfigStore, eventPath string) (*SantaService, error) {
-	global, err := ds.Config(context.TODO(), "global")
+func NewService(ds ConfigStore, eventDir string) (*SantaService, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	global, err := ds.Config(ctx, "global")
 	if err != nil {
 		return nil, err
 	}
 	return &SantaService{
-		global:      global,
-		repo:        ds,
-		eventWriter: santaEventWriter(eventPath),
+		global:   global,
+		repo:     ds,
+		eventDir: eventDir,
 	}, nil
 }
 
 type Service interface {
 	Preflight(ctx context.Context, machineID string, p santa.PreflightPayload) (*santa.Preflight, error)
 	RuleDownload(ctx context.Context, machineID string) ([]santa.Rule, error)
-	UploadEvent(ctx context.Context, machineID string, body io.ReadCloser) error
-}
-
-func santaEventWriter(path string) io.Writer {
-	events := &lumberjack.Logger{
-		Filename: path,
-	}
-	return events
+	UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error
 }
 
 type Endpoints struct {
