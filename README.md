@@ -5,7 +5,7 @@
 Moroz is a server for the [Santa](https://github.com/google/santa) project.
 
 > Santa is a binary whitelisting/blacklisting system for macOS. It consists of a kernel extension that monitors for executions, a userland daemon that makes execution decisions based on the contents of a SQLite database, a GUI agent that notifies the user in case of a block decision and a command-line utility for managing the system and synchronizing the database with a server.
-
+>
 > Santa is a project of Google's Macintosh Operations Team.
 
 See this [short video](https://www.youtube.com/watch?v=3w3_bcJYWj0) for a demo.
@@ -15,12 +15,11 @@ See this [short video](https://www.youtube.com/watch?v=3w3_bcJYWj0) for a demo.
 Moroz uses [TOML](https://github.com/toml-lang/toml#example) rule files to specify configuration for Santa.
 The path to the folder with the configurations can be specified with `-configs /path/to/configs`.
 
-Moroz expects a `global.toml` file which contains a list of rules. The `global` config can be overriden by providing a machine specific config. 
-To do so, name the file for each host with the santa `machine id` [configuration parameter](https://github.com/google/santa/wiki/Configuration#keys-to-be-used-with-a-tls-server). By default, this is the hardware UUID of the mac.
+Moroz expects a `global.toml` file which contains a list of rules. The `global` config can be overriden by providing a machine specific config. To do so, name the file for each host with the Santa `machine id` [configuration parameter](https://github.com/google/santa/wiki/Configuration#keys-to-be-used-with-a-tls-server). By default, this is the hardware UUID of the mac.
 
 Below is a sample configuration file:
 
-```
+```toml
 client_mode = "MONITOR"
 #blacklist_regex = "^(?:/Users)/.*"
 #whitelist_regex = "^(?:/Users)/.*"
@@ -56,8 +55,8 @@ Values for `policy`:
 BLACKLIST | WHITELIST
 ```
 
-use the santactl command to get the sha256 value: 
-```
+Use the `santactl` command to get the sha256 value: 
+```bash
 santactl fileinfo /Applications/Firefox.app
 ```
 
@@ -65,10 +64,8 @@ santactl fileinfo /Applications/Firefox.app
 
 The commands below assume you have `$GOPATH/bin` in your path.
 
-```
-go get -u github.com/golang/dep
-dep ensure
-cd cmd/moroz; go install; cd -
+```bash
+cd cmd/moroz; go build
 ```
 
 # Run
@@ -76,7 +73,7 @@ cd cmd/moroz; go install; cd -
 `moroz`  
 See `moroz -h` for a full list of options.
 
-```
+```bash
 Usage of moroz:
   -configs string
     	path to config folder (default "../../configs")
@@ -98,33 +95,31 @@ Download the `moroz` binary from the [Releases](https://github.com/groob/moroz/r
 Copy the `configs` folder from the repo somewhere locally. It must have the `global.toml` file.
 
 
-Generate a self signed certificate which will be used by santa and the server for communication.
+Generate a self-signed certificate which will be used by Santa clients and the server for communication.
 
 ```
 ./tools/dev/certificate/create
 ```
 
-Add the santa CN to your hosts file.
+Add the Santa CN to your hosts file.
 
 ```
 sudo echo "127.0.0.1 santa" >> /etc/hosts
 ```
 
-Add the self signed cert to your system roots. 
+Add the self-signed cert to your system roots. 
 
 ```
 ./tools/dev/certificate/add-trusted-cert
 ```
 
 ## Install Santa:
-The latest version of santa is available on the github repo page: https://github.com/google/santa/releases
+The latest version of Santa is available on the GitHub repo page: https://github.com/google/santa/releases
 
 ## Configure Santa:
-You will need to provide the `SyncBaseURL` settings. See the [santa repo](https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/deployment/configuration.md#important) for a complete guide on all the client configuration options.
+You will need to provide the `SyncBaseURL` settings. See the [Santa repo](https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/deployment/configuration.md#important) for a complete guide on all the client configuration options.
 
-
-
-Start moroz:
+## Start moroz:
 Assumes you have the `./server.crt` and `./server.key` files.
 
 ```
@@ -132,4 +127,4 @@ moroz -configs /path/to/configs/folder
 ```
 
 ---
-moroz icon by [Souvik Bhattacharjee](https://thenounproject.com/souvik502/)from the [Noun Project](https://thenounproject.com/).
+moroz icon by [Souvik Bhattacharjee](https://thenounproject.com/souvik502/) from the [Noun Project](https://thenounproject.com/).
