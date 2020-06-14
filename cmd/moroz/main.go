@@ -22,7 +22,7 @@ import (
 )
 
 const openSSLBash = `
-Looks like you're missing a TLS certifacte and private key. You can quickly generate one 
+Looks like you're missing a TLS certificate and private key. You can quickly generate one 
 by using the commands below:
 
 	./tools/dev/certificate/create
