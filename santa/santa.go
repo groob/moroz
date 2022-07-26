@@ -27,11 +27,11 @@ type Rule struct {
 // Preflight representssync response sent to a Santa client by the sync server.
 type Preflight struct {
 	ClientMode                    ClientMode `json:"client_mode" toml:"client_mode"`
-	BlacklistRegex                string     `json:"blacklist_regex" toml:"blacklist_regex"`
-	WhitelistRegex                string     `json:"whitelist_regex" toml:"whitelist_regex"`
+	BlocklistRegex                string     `json:"blocklist_regex" toml:"blocklist_regex"`
+	AllowlistRegex                string     `json:"allowlist_regex" toml:"allowlist_regex"`
 	BatchSize                     int        `json:"batch_size" toml:"batch_size"`
 	EnableBundles                 bool       `json:"enable_bundles" toml:"enable_bundles"`
-	EnabledTransitiveWhitelisting bool       `json:"enabled_transitive_whitelisting" toml:"enabled_transitive_whitelisting"`
+	EnabledTransitiveallowlisting bool       `json:"enabled_transitive_allowlisting" toml:"enabled_transitive_allowlisting"`
 }
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.
@@ -43,7 +43,7 @@ type PreflightPayload struct {
 	CertificateRuleCount int        `json:"certificate_rule_count"`
 	BinaryRuleCount      int        `json:"binary_rule_count"`
 	ClientMode           ClientMode `json:"client_mode"`
-	SerialNumber         string     `json:"serial_number"`
+	SerialNumber         string     `json:"serial_num"`
 	PrimaryUser          string     `json:"primary_user"`
 }
 
@@ -94,22 +94,22 @@ func (r RuleType) MarshalText() ([]byte, error) {
 type Policy int
 
 const (
-	Blacklist Policy = iota
-	Whitelist
+	Blocklist Policy = iota
+	allowlist
 
-	// WhitelistCompiler is a Transitive Whitelist policy which allows whitelisting binaries created by
-	// a specific compiler. EnabledTransitiveWhitelisting must be set to true in the Preflight first.
-	WhitelistCompiler
+	// allowlistCompiler is a Transitive allowlist policy which allows allowlisting binaries created by
+	// a specific compiler. EnabledTransitiveallowlisting must be set to true in the Preflight first.
+	allowlistCompiler
 )
 
 func (p *Policy) UnmarshalText(text []byte) error {
 	switch t := string(text); t {
-	case "BLACKLIST":
-		*p = Blacklist
-	case "WHITELIST":
-		*p = Whitelist
-	case "WHITELIST_COMPILER":
-		*p = WhitelistCompiler
+	case "BLOCKLIST":
+		*p = Blocklist
+	case "ALLOWLIST":
+		*p = allowlist
+	case "ALLOWLIST_COMPILER":
+		*p = allowlistCompiler
 	default:
 		return errors.Errorf("unknown policy value %q", t)
 	}
@@ -118,12 +118,12 @@ func (p *Policy) UnmarshalText(text []byte) error {
 
 func (p Policy) MarshalText() ([]byte, error) {
 	switch p {
-	case Blacklist:
-		return []byte("BLACKLIST"), nil
-	case Whitelist:
-		return []byte("WHITELIST"), nil
-	case WhitelistCompiler:
-		return []byte("WHITELIST_COMPILER"), nil
+	case Blocklist:
+		return []byte("BLOCKLIST"), nil
+	case allowlist:
+		return []byte("ALLOWLIST"), nil
+	case allowlistCompiler:
+		return []byte("ALLOWLIST_COMPILER"), nil
 	default:
 		return nil, errors.Errorf("unknown policy %d", p)
 	}
