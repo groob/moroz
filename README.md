@@ -4,7 +4,7 @@
 
 Moroz is a server for the [Santa](https://github.com/google/santa) project.
 
-> Santa is a binary whitelisting/blacklisting system for macOS. It consists of a kernel extension that monitors for executions, a userland daemon that makes execution decisions based on the contents of a SQLite database, a GUI agent that notifies the user in case of a block decision and a command-line utility for managing the system and synchronizing the database with a server.
+> Santa is a binary allow/block system for macOS. It consists of a kernel extension that monitors for executions, a userland daemon that makes execution decisions based on the contents of a SQLite database, a GUI agent that notifies the user in case of a block decision and a command-line utility for managing the system and synchronizing the database with a server.
 >
 > Santa is a project of Google's Macintosh Operations Team.
 
@@ -21,21 +21,27 @@ Below is a sample configuration file:
 
 ```toml
 client_mode = "MONITOR"
-#blacklist_regex = "^(?:/Users)/.*"
-#whitelist_regex = "^(?:/Users)/.*"
+#blocked_path_regex = "^(?:/Users)/.*"
+#allowed_path_regex = "^(?:/Users)/.*"
 batch_size = 100
 
 [[rules]]
 rule_type = "BINARY"
-policy = "BLACKLIST"
+policy = "BLOCK"
 sha256 = "2dc104631939b4bdf5d6bccab76e166e37fe5e1605340cf68dab919df58b8eda"
-custom_msg = "blacklist firefox"
+custom_msg = "block firefox"
 
 [[rules]]
 rule_type = "CERTIFICATE"
-policy = "BLACKLIST"
+policy = "ALLOW"
 sha256 = "e7726cf87cba9e25139465df5bd1557c8a8feed5c7dd338342d8da0959b63c8d"
-custom_msg = "blacklist dash app certificate"
+custom_msg = "allow dash app certificate"
+
+[[rules]]
+rule_type = "TEAMID"
+policy = "ALLOW"
+identifier = "59GAB85EFG"
+custom_msg = "allow Apple Team Id"
 ```
 
 # Creating rules
@@ -47,12 +53,12 @@ MONITOR | LOCKDOWN
 
 Values for `rule_type`:
 ```
-BINARY | CERTIFICATE
+BINARY | CERTIFICATE | TEAMID
 ```
 
 Values for `policy`:
 ```
-BLACKLIST | WHITELIST
+BLOCK | ALLOW
 ```
 
 Use the `santactl` command to get the sha256 value: 

@@ -21,17 +21,18 @@ type Rule struct {
 	RuleType      RuleType `json:"rule_type" toml:"rule_type"`
 	Policy        Policy   `json:"policy" toml:"policy"`
 	SHA256        string   `json:"sha256" toml:"sha256"`
+	Identifier    string   `json:"identifier,omitempty" toml:"identifier,omitempty"`
 	CustomMessage string   `json:"custom_msg,omitempty" toml:"custom_msg,omitempty"`
 }
 
 // Preflight representssync response sent to a Santa client by the sync server.
 type Preflight struct {
-	ClientMode                    ClientMode `json:"client_mode" toml:"client_mode"`
-	BlacklistRegex                string     `json:"blacklist_regex" toml:"blacklist_regex"`
-	WhitelistRegex                string     `json:"whitelist_regex" toml:"whitelist_regex"`
-	BatchSize                     int        `json:"batch_size" toml:"batch_size"`
-	EnableBundles                 bool       `json:"enable_bundles" toml:"enable_bundles"`
-	EnabledTransitiveWhitelisting bool       `json:"enabled_transitive_whitelisting" toml:"enabled_transitive_whitelisting"`
+	ClientMode             ClientMode `json:"client_mode" toml:"client_mode"`
+	BlockedPathRegex       string     `json:"blocked_path_regex" toml:"blocked_path_regex"`
+	AllowedPathRegex       string     `json:"allowed_path_regex" toml:"allowed_path_regex"`
+	BatchSize              int        `json:"batch_size" toml:"batch_size"`
+	EnableBundles          bool       `json:"enable_bundles" toml:"enable_bundles"`
+	EnabledTransitiveRules bool       `json:"enable_transitive_rules" toml:"enable_transitive_rules"`
 }
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.
@@ -65,6 +66,10 @@ const (
 	// This is a powerful rule type that has a much broader reach than an individual binary rule .
 	// A signing certificate can sign any number of binaries.
 	Certificate
+
+	// TeamId rule uses the SHA-256 hash that represents the entity that published the binary. Rule will be
+	// applied to all packages published by this entity
+	TeamId
 )
 
 func (r *RuleType) UnmarshalText(text []byte) error {
@@ -73,6 +78,8 @@ func (r *RuleType) UnmarshalText(text []byte) error {
 		*r = Binary
 	case "CERTIFICATE":
 		*r = Certificate
+	case "TEAMID":
+		*r = TeamId
 	default:
 		return errors.Errorf("unknown rule_type value %q", t)
 	}
@@ -85,6 +92,8 @@ func (r RuleType) MarshalText() ([]byte, error) {
 		return []byte("BINARY"), nil
 	case Certificate:
 		return []byte("CERTIFICATE"), nil
+	case TeamId:
+		return []byte("TEAMID"), nil
 	default:
 		return nil, errors.Errorf("unknown rule_type %d", r)
 	}
@@ -94,22 +103,22 @@ func (r RuleType) MarshalText() ([]byte, error) {
 type Policy int
 
 const (
-	Blacklist Policy = iota
-	Whitelist
+	Block Policy = iota
+	Allow
 
-	// WhitelistCompiler is a Transitive Whitelist policy which allows whitelisting binaries created by
-	// a specific compiler. EnabledTransitiveWhitelisting must be set to true in the Preflight first.
-	WhitelistCompiler
+	// AllowCompiler is a Transitive Allow policy which allows adding binaries created by
+	// a specific compiler to an Allow List. EnabledTransitiveRules must be set to true in the Preflight first.
+	AllowCompiler
 )
 
 func (p *Policy) UnmarshalText(text []byte) error {
 	switch t := string(text); t {
-	case "BLACKLIST":
-		*p = Blacklist
-	case "WHITELIST":
-		*p = Whitelist
-	case "WHITELIST_COMPILER":
-		*p = WhitelistCompiler
+	case "BLOCK":
+		*p = Block
+	case "ALLOW":
+		*p = Allow
+	case "ALLOW_COMPILER":
+		*p = AllowCompiler
 	default:
 		return errors.Errorf("unknown policy value %q", t)
 	}
@@ -118,12 +127,12 @@ func (p *Policy) UnmarshalText(text []byte) error {
 
 func (p Policy) MarshalText() ([]byte, error) {
 	switch p {
-	case Blacklist:
-		return []byte("BLACKLIST"), nil
-	case Whitelist:
-		return []byte("WHITELIST"), nil
-	case WhitelistCompiler:
-		return []byte("WHITELIST_COMPILER"), nil
+	case Block:
+		return []byte("BLOCK"), nil
+	case Allow:
+		return []byte("ALLOW"), nil
+	case AllowCompiler:
+		return []byte("ALLOW_COMPILER"), nil
 	default:
 		return nil, errors.Errorf("unknown policy %d", p)
 	}
