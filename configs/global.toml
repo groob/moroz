@@ -19,25 +19,25 @@ custom_msg = "block dash app certificate"
 
 [[rules]]
 rule_type = "BINARY"
-policy = "ALLOWED_COMPILER"
+policy = "ALLOW_COMPILER"
 sha256 = "60d79d1763fefb56716e4a36284300523eb4335c3726fb9070fa83074b02279e"
 custom_msg = "allow go compiler component"
 
 [[rules]]
 rule_type = "BINARY"
-policy = "ALLOWED_COMPILER"
+policy = "ALLOW_COMPILER"
 sha256 = "8e78770685d51324b78588fddc6afc2f8b6cef5231c27eeb97363cc437fec18a"
 custom_msg = "allow go compiler component"
 
 [[rules]]
 rule_type = "BINARY"
-policy = "ALLOWED_COMPILER"
+policy = "ALLOW_COMPILER"
 sha256 = "e88617cfd62809fb10e213c459a52f48e028fae4321e41134c4797465af886b6"
 custom_msg = "allow go compiler component"
 
 [[rules]]
 rule_type = "BINARY"
-policy = "ALLOWED_COMPILER"
+policy = "ALLOW_COMPILER"
 sha256 = "d867fca68bbd7db18e9ced231800e7535bc067852b1e530987bb7f57b5e3a02c"
 custom_msg = "allow go compiler component"
 
