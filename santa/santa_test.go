@@ -24,6 +24,10 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 		t.Errorf("have rule_type %d, want %d\n", have, want)
 	}
 
+	if have, want := conf.Rules[6].RuleType, TeamId; have != want {
+		t.Errorf("have rule_type %d, want %d\n", have, want)
+	}
+
 	if have, want := conf.Rules[0].Policy, Block; have != want {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}

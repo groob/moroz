@@ -3,7 +3,7 @@ client_mode = "MONITOR"
 # allowed_path_regex = "^(?:/Users)/.*"
 batch_size = 100
 enable_bundles = false
-enabled_transitive_whitelisting = true
+enable_transitive_rules = true
 
 [[rules]]
 rule_type = "BINARY"

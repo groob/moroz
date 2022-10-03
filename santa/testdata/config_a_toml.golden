@@ -1,9 +1,9 @@
 client_mode = "LOCKDOWN"
-allowed_path_regex = "^(?:/Users)/.*"
 blocked_path_regex = "^(?:/Users)/.*"
+allowed_path_regex = "^(?:/Users)/.*"
 batch_size = 100
 enable_bundles = false
-enabled_transitive_whitelisting = true
+enable_transitive_rules = true
 
 [[rules]]
   rule_type = "BINARY"
@@ -40,3 +40,10 @@ enabled_transitive_whitelisting = true
   policy = "ALLOW_COMPILER"
   sha256 = "d867fca68bbd7db18e9ced231800e7535bc067852b1e530987bb7f57b5e3a02c"
   custom_msg = "allow go compiler component"
+
+[[rules]]
+  rule_type = "TEAMID"
+  policy = "ALLOW"
+  sha256 = ""
+  identifier = "59GAB85EFG"
+  custom_msg = "allow Apple Team Id"

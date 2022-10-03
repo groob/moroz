@@ -27,12 +27,12 @@ type Rule struct {
 
 // Preflight representssync response sent to a Santa client by the sync server.
 type Preflight struct {
-	ClientMode             ClientMode `json:"client_mode" toml:"client_mode"`
-	BlockedPathRegex       string     `json:"blocked_path_regex" toml:"blocked_path_regex"`
-	AllowedPathRegex       string     `json:"allowed_path_regex" toml:"allowed_path_regex"`
-	BatchSize              int        `json:"batch_size" toml:"batch_size"`
-	EnableBundles          bool       `json:"enable_bundles" toml:"enable_bundles"`
-	EnabledTransitiveRules bool       `json:"enable_transitive_rules" toml:"enable_transitive_rules"`
+	ClientMode            ClientMode `json:"client_mode" toml:"client_mode"`
+	BlockedPathRegex      string     `json:"blocked_path_regex" toml:"blocked_path_regex"`
+	AllowedPathRegex      string     `json:"allowed_path_regex" toml:"allowed_path_regex"`
+	BatchSize             int        `json:"batch_size" toml:"batch_size"`
+	EnableBundles         bool       `json:"enable_bundles" toml:"enable_bundles"`
+	EnableTransitiveRules bool       `json:"enable_transitive_rules" toml:"enable_transitive_rules"`
 }
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.
@@ -107,7 +107,7 @@ const (
 	Allow
 
 	// AllowCompiler is a Transitive Allow policy which allows adding binaries created by
-	// a specific compiler to an Allow List. EnabledTransitiveRules must be set to true in the Preflight first.
+	// a specific compiler to an Allow List. EnableTransitiveRules must be set to true in the Preflight first.
 	AllowCompiler
 )
 
