@@ -16,12 +16,11 @@ type Config struct {
 }
 
 // Rule is a Santa rule.
-// Full documentation: https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/details/rules.md
+// Full documentation: https://github.com/google/santa/blob/main/docs/concepts/rules.md
 type Rule struct {
 	RuleType      RuleType `json:"rule_type" toml:"rule_type"`
 	Policy        Policy   `json:"policy" toml:"policy"`
-	SHA256        string   `json:"sha256" toml:"sha256"`
-	Identifier    string   `json:"identifier,omitempty" toml:"identifier,omitempty"`
+	Identifier    string   `json:"identifier" toml:"identifier"`
 	CustomMessage string   `json:"custom_msg,omitempty" toml:"custom_msg,omitempty"`
 }
 
@@ -103,22 +102,22 @@ func (r RuleType) MarshalText() ([]byte, error) {
 type Policy int
 
 const (
-	Block Policy = iota
-	Allow
+	BlockList Policy = iota
+	AllowList
 
-	// AllowCompiler is a Transitive Allow policy which allows adding binaries created by
-	// a specific compiler to an Allow List. EnableTransitiveRules must be set to true in the Preflight first.
-	AllowCompiler
+	// AllowListCompiler is a Transitive AllowList policy which allows adding binaries created by
+	// a specific compiler to an AllowList. EnableTransitiveRules must be set to true in the Preflight first.
+	AllowListCompiler
 )
 
 func (p *Policy) UnmarshalText(text []byte) error {
 	switch t := string(text); t {
-	case "BLOCK":
-		*p = Block
-	case "ALLOW":
-		*p = Allow
-	case "ALLOW_COMPILER":
-		*p = AllowCompiler
+	case "BLOCKLIST":
+		*p = BlockList
+	case "ALLOWLIST":
+		*p = AllowList
+	case "ALLOWLIST_COMPILER":
+		*p = AllowListCompiler
 	default:
 		return errors.Errorf("unknown policy value %q", t)
 	}
@@ -127,12 +126,12 @@ func (p *Policy) UnmarshalText(text []byte) error {
 
 func (p Policy) MarshalText() ([]byte, error) {
 	switch p {
-	case Block:
-		return []byte("BLOCK"), nil
-	case Allow:
-		return []byte("ALLOW"), nil
-	case AllowCompiler:
-		return []byte("ALLOW_COMPILER"), nil
+	case BlockList:
+		return []byte("BLOCKLIST"), nil
+	case AllowList:
+		return []byte("ALLOWLIST"), nil
+	case AllowListCompiler:
+		return []byte("ALLOWLIST_COMPILER"), nil
 	default:
 		return nil, errors.Errorf("unknown policy %d", p)
 	}
