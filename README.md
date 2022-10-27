@@ -52,7 +52,7 @@ BINARY | CERTIFICATE
 
 Values for `policy`:
 ```
-blocklist | allowlist
+BLOCKLIST | ALLOWLIST
 ```
 
 Use the `santactl` command to get the sha256 value: 

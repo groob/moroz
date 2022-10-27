@@ -37,6 +37,6 @@ custom_msg = "allowlist go compiler component"
 
 [[rules]]
 rule_type = "BINARY"
-policy = "allowlist_COMPILER"
+policy = "ALLOWLIST_COMPILER"
 sha256 = "d867fca68bbd7db18e9ced231800e7535bc067852b1e530987bb7f57b5e3a02c"
 custom_msg = "allowlist go compiler component"
