@@ -31,7 +31,7 @@ type Preflight struct {
 	AllowlistRegex                string     `json:"allowlist_regex" toml:"allowlist_regex"`
 	BatchSize                     int        `json:"batch_size" toml:"batch_size"`
 	EnableBundles                 bool       `json:"enable_bundles" toml:"enable_bundles"`
-	EnabledTransitiveallowlisting bool       `json:"enabled_transitive_allowlisting" toml:"enabled_transitive_allowlisting"`
+	EnabledTransitiveAllowlisting bool       `json:"enabled_transitive_allowlisting" toml:"enabled_transitive_allowlisting"`
 }
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.
@@ -98,7 +98,7 @@ const (
 	Allowlist
 
 	// AllowlistCompiler is a Transitive allowlist policy which allows allowlisting binaries created by
-	// a specific compiler. EnabledTransitiveallowlisting must be set to true in the Preflight first.
+	// a specific compiler. EnabledTransitiveAllowlisting must be set to true in the Preflight first.
 	AllowlistCompiler
 )
 
