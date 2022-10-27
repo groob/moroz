@@ -27,13 +27,13 @@ batch_size = 100
 
 [[rules]]
 rule_type = "BINARY"
-policy = "blocklist"
+policy = "BLOCKLIST"
 sha256 = "2dc104631939b4bdf5d6bccab76e166e37fe5e1605340cf68dab919df58b8eda"
 custom_msg = "blocklist firefox"
 
 [[rules]]
 rule_type = "CERTIFICATE"
-policy = "blocklist"
+policy = "BLOCKLIST"
 sha256 = "e7726cf87cba9e25139465df5bd1557c8a8feed5c7dd338342d8da0959b63c8d"
 custom_msg = "blocklist dash app certificate"
 ```

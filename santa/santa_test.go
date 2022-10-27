@@ -28,11 +28,11 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}
 
-	if have, want := conf.Rules[1].Policy, allowlist; have != want {
+	if have, want := conf.Rules[1].Policy, Allowlist; have != want {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}
 
-	if have, want := conf.Rules[2].Policy, allowlistCompiler; have != want {
+	if have, want := conf.Rules[2].Policy, AllowlistCompiler; have != want {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}
 

@@ -95,11 +95,11 @@ type Policy int
 
 const (
 	Blocklist Policy = iota
-	allowlist
+	Allowlist
 
-	// allowlistCompiler is a Transitive allowlist policy which allows allowlisting binaries created by
+	// AllowlistCompiler is a Transitive allowlist policy which allows allowlisting binaries created by
 	// a specific compiler. EnabledTransitiveallowlisting must be set to true in the Preflight first.
-	allowlistCompiler
+	AllowlistCompiler
 )
 
 func (p *Policy) UnmarshalText(text []byte) error {
@@ -107,9 +107,9 @@ func (p *Policy) UnmarshalText(text []byte) error {
 	case "BLOCKLIST":
 		*p = Blocklist
 	case "ALLOWLIST":
-		*p = allowlist
+		*p = Allowlist
 	case "ALLOWLIST_COMPILER":
-		*p = allowlistCompiler
+		*p = AllowlistCompiler
 	default:
 		return errors.Errorf("unknown policy value %q", t)
 	}
@@ -120,9 +120,9 @@ func (p Policy) MarshalText() ([]byte, error) {
 	switch p {
 	case Blocklist:
 		return []byte("BLOCKLIST"), nil
-	case allowlist:
+	case Allowlist:
 		return []byte("ALLOWLIST"), nil
-	case allowlistCompiler:
+	case AllowlistCompiler:
 		return []byte("ALLOWLIST_COMPILER"), nil
 	default:
 		return nil, errors.Errorf("unknown policy %d", p)
