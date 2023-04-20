@@ -20,7 +20,8 @@ type Config struct {
 type Rule struct {
 	RuleType      RuleType `json:"rule_type" toml:"rule_type"`
 	Policy        Policy   `json:"policy" toml:"policy"`
-	SHA256        string   `json:"sha256" toml:"sha256"`
+	SHA256        string   `json:"sha256,omitempty" toml:"sha256,omitempty"`
+	Identifier    string   `json:"identifier,omitempty" toml:"identifier,omitempty"`
 	CustomMessage string   `json:"custom_msg,omitempty" toml:"custom_msg,omitempty"`
 }
 
@@ -65,6 +66,8 @@ const (
 	// This is a powerful rule type that has a much broader reach than an individual binary rule .
 	// A signing certificate can sign any number of binaries.
 	Certificate
+
+	TeamID
 )
 
 func (r *RuleType) UnmarshalText(text []byte) error {
@@ -73,6 +76,8 @@ func (r *RuleType) UnmarshalText(text []byte) error {
 		*r = Binary
 	case "CERTIFICATE":
 		*r = Certificate
+	case "TEAMID":
+		*r = TeamID
 	default:
 		return errors.Errorf("unknown rule_type value %q", t)
 	}
@@ -85,6 +90,8 @@ func (r RuleType) MarshalText() ([]byte, error) {
 		return []byte("BINARY"), nil
 	case Certificate:
 		return []byte("CERTIFICATE"), nil
+	case TeamID:
+		return []byte("TEAMID"), nil
 	default:
 		return nil, errors.Errorf("unknown rule_type %d", r)
 	}
