@@ -59,7 +59,7 @@ func main() {
 	}
 
 	if _, err := os.Stat(*flTLSCert); *flUseTLS && os.IsNotExist(err) {
-		fmt.Println(openSSLBash)
+		fmt.Printf(openSSLBash)
 		os.Exit(2)
 	}
 

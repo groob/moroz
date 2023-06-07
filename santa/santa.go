@@ -20,18 +20,20 @@ type Config struct {
 type Rule struct {
 	RuleType      RuleType `json:"rule_type" toml:"rule_type"`
 	Policy        Policy   `json:"policy" toml:"policy"`
-	SHA256        string   `json:"sha256" toml:"sha256"`
+	Identifier    string   `json:"identifier" toml:"identifier"`
 	CustomMessage string   `json:"custom_msg,omitempty" toml:"custom_msg,omitempty"`
 }
 
 // Preflight representssync response sent to a Santa client by the sync server.
 type Preflight struct {
-	ClientMode                    ClientMode `json:"client_mode" toml:"client_mode"`
-	BlocklistRegex                string     `json:"blocklist_regex" toml:"blocklist_regex"`
-	AllowlistRegex                string     `json:"allowlist_regex" toml:"allowlist_regex"`
-	BatchSize                     int        `json:"batch_size" toml:"batch_size"`
-	EnableBundles                 bool       `json:"enable_bundles" toml:"enable_bundles"`
-	EnabledTransitiveAllowlisting bool       `json:"enabled_transitive_allowlisting" toml:"enabled_transitive_allowlisting"`
+	ClientMode            ClientMode `json:"client_mode" toml:"client_mode"`
+	BlockedPathRegex      string     `json:"blocked_path_regex" toml:"blocked_path_regex"`
+	AllowedPathRegex      string     `json:"allowed_path_regex" toml:"allowed_path_regex"`
+	BatchSize             int        `json:"batch_size" toml:"batch_size"`
+	EnableBundles         bool       `json:"enable_bundles" toml:"enable_bundles"`
+	EnableTransitiveRules bool       `json:"enable_transitive_rules" toml:"enable_transitive_rules"`
+	CleanSync             bool       `json:"clean_sync" toml:"clean_sync"`
+	FullSyncInterval      int        `json:"full_sync_interval" toml:"full_sync_interval"`
 }
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.
@@ -65,6 +67,17 @@ const (
 	// This is a powerful rule type that has a much broader reach than an individual binary rule .
 	// A signing certificate can sign any number of binaries.
 	Certificate
+
+	// TeamID rules are the 10-character identifier issued by Apple and tied to developer accounts/organizations.
+	// This is an even more powerful rule with broader reach than individual certificate rules.
+	// ie. EQHXZ8M8AV for Google
+	TeamID
+
+	// Signing IDs are arbitrary identifiers under developer control that are given to a binary at signing time.
+	// Because the signing IDs are arbitrary, the Santa rule identifier must be prefixed with the Team ID associated
+	// with the Apple developer certificate used to sign the application.
+	// ie. EQHXZ8M8AV:com.google.Chrome
+	SigningID
 )
 
 func (r *RuleType) UnmarshalText(text []byte) error {
@@ -73,6 +86,10 @@ func (r *RuleType) UnmarshalText(text []byte) error {
 		*r = Binary
 	case "CERTIFICATE":
 		*r = Certificate
+	case "TEAMID":
+		*r = TeamID
+	case "SIGNINGID":
+		*r = SigningID
 	default:
 		return errors.Errorf("unknown rule_type value %q", t)
 	}
@@ -85,6 +102,10 @@ func (r RuleType) MarshalText() ([]byte, error) {
 		return []byte("BINARY"), nil
 	case Certificate:
 		return []byte("CERTIFICATE"), nil
+	case TeamID:
+		return []byte("TEAMID"), nil
+	case SigningID:
+		return []byte("SIGNINGID"), nil
 	default:
 		return nil, errors.Errorf("unknown rule_type %d", r)
 	}
@@ -100,6 +121,7 @@ const (
 	// AllowlistCompiler is a Transitive allowlist policy which allows allowlisting binaries created by
 	// a specific compiler. EnabledTransitiveAllowlisting must be set to true in the Preflight first.
 	AllowlistCompiler
+	Remove
 )
 
 func (p *Policy) UnmarshalText(text []byte) error {
@@ -110,6 +132,8 @@ func (p *Policy) UnmarshalText(text []byte) error {
 		*p = Allowlist
 	case "ALLOWLIST_COMPILER":
 		*p = AllowlistCompiler
+	case "REMOVE":
+		*p = Remove
 	default:
 		return errors.Errorf("unknown policy value %q", t)
 	}
@@ -124,6 +148,8 @@ func (p Policy) MarshalText() ([]byte, error) {
 		return []byte("ALLOWLIST"), nil
 	case AllowlistCompiler:
 		return []byte("ALLOWLIST_COMPILER"), nil
+	case Remove:
+		return []byte("REMOVE"), nil
 	default:
 		return nil, errors.Errorf("unknown policy %d", p)
 	}

@@ -16,11 +16,31 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 		t.Errorf("have client_mode %d, want %d\n", have, want)
 	}
 
+	if have, want := conf.CleanSync, true; have != want {
+		t.Errorf("have clean_sync %t, want %t\n", have, want)
+	}
+
+	if have, want := conf.FullSyncInterval, 600; have != want {
+		t.Errorf("have full_sync_interval %d, want %d\n", have, want)
+	}
+
+	if have, want := conf.Rules[0].Identifier, "2dc104631939b4bdf5d6bccab76e166e37fe5e1605340cf68dab919df58b8eda"; have != want {
+		t.Errorf("have identifier %s, want %s\n", have, want)
+	}
+
 	if have, want := conf.Rules[0].RuleType, Binary; have != want {
 		t.Errorf("have rule_type %d, want %d\n", have, want)
 	}
 
 	if have, want := conf.Rules[1].RuleType, Certificate; have != want {
+		t.Errorf("have rule_type %d, want %d\n", have, want)
+	}
+
+	if have, want := conf.Rules[2].RuleType, TeamID; have != want {
+		t.Errorf("have rule_tpe %d, want %d\n", have, want)
+	}
+
+	if have, want := conf.Rules[3].RuleType, SigningID; have != want {
 		t.Errorf("have rule_type %d, want %d\n", have, want)
 	}
 
@@ -32,10 +52,13 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}
 
-	if have, want := conf.Rules[2].Policy, AllowlistCompiler; have != want {
+	if have, want := conf.Rules[4].Policy, AllowlistCompiler; have != want {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}
 
+	if have, want := conf.Rules[5].Policy, Remove; have != want {
+		t.Errorf("have policy %d, want %d\n", have, want)
+	}
 }
 
 func testConfig(t *testing.T, path string, replace bool) Config {
