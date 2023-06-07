@@ -36,6 +36,18 @@ rule_type = "CERTIFICATE"
 policy = "BLOCKLIST"
 sha256 = "e7726cf87cba9e25139465df5bd1557c8a8feed5c7dd338342d8da0959b63c8d"
 custom_msg = "blocklist dash app certificate"
+
+[[rules]]
+rule_type = "TEAMID"
+policy = "ALLOWLIST"
+identifier = "EQHXZ8M8AV"
+custom_msg = "allow google team id"
+
+[[rules]]
+rule_type = "SIGNINGID"
+policy = "ALLOWLIST"
+identifier = "EQHXZ8M8AV:com.google.Chrome"
+custom_msg = "allow google chrome signing id"
 ```
 
 # Creating rules
@@ -47,12 +59,12 @@ MONITOR | LOCKDOWN
 
 Values for `rule_type`:
 ```
-BINARY | CERTIFICATE
+BINARY | CERTIFICATE | TEAMID | SIGNINGID
 ```
 
 Values for `policy`:
 ```
-BLOCKLIST | ALLOWLIST
+BLOCKLIST | ALLOWLIST | ALLOWLIST_COMPILER | REMOVE
 ```
 
 Use the `santactl` command to get the sha256 value: 
