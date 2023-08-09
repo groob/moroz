@@ -131,7 +131,7 @@ The latest version of Santa is available on the GitHub repo page: https://github
 ## Configure Santa:
 You will need to provide the `SyncBaseURL` settings. See the [Santa repo](https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/deployment/configuration.md#important) for a complete guide on all the client configuration options.
 
-A likely value for local testing as in the Quickstart will be: `https://moroz.local:8934/v1/santa/`
+A likely value for local testing as in the Quickstart will be: `https://moroz.local:8080/v1/santa/`
 
 ## Start moroz:
 Assumes you have the `./server.crt` and `./server.key` files.
