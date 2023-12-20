@@ -2,7 +2,6 @@ package santa
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -64,7 +63,7 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 func testConfig(t *testing.T, path string, replace bool) Config {
 	t.Helper()
 
-	file, err := ioutil.ReadFile(path)
+	file, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("loading config from path %q, err = %q\n", path, err)
 	}
@@ -80,7 +79,7 @@ func testConfig(t *testing.T, path string, replace bool) Config {
 	}
 
 	if replace {
-		if err := ioutil.WriteFile(path, buf.Bytes(), os.ModePerm); err != nil {
+		if err := os.WriteFile(path, buf.Bytes(), os.ModePerm); err != nil {
 			t.Fatalf("replace config at path %q, err = %q\n", path, err)
 		}
 		return testConfig(t, path, false)

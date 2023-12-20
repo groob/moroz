@@ -2,6 +2,7 @@ client_mode = "LOCKDOWN"
 blocked_path_regex = "^(?:/Users)/.*"
 allowed_path_regex = "^(?:/Users)/.*"
 batch_size = 100
+enable_all_event_upload = true
 enable_bundles = false
 enable_transitive_rules = true
 clean_sync = true
