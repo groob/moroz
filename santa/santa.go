@@ -2,8 +2,6 @@
 package santa
 
 import (
-	"encoding/json"
-
 	"github.com/pkg/errors"
 )
 
@@ -24,12 +22,13 @@ type Rule struct {
 	CustomMessage string   `json:"custom_msg,omitempty" toml:"custom_msg,omitempty"`
 }
 
-// Preflight representssync response sent to a Santa client by the sync server.
+// Preflight represents sync response sent to a Santa client by the sync server.
 type Preflight struct {
 	ClientMode            ClientMode `json:"client_mode" toml:"client_mode"`
 	BlockedPathRegex      string     `json:"blocked_path_regex" toml:"blocked_path_regex"`
 	AllowedPathRegex      string     `json:"allowed_path_regex" toml:"allowed_path_regex"`
 	BatchSize             int        `json:"batch_size" toml:"batch_size"`
+	EnableAllEventUpload  bool       `json:"enable_all_event_upload" toml:"enable_all_event_upload"`
 	EnableBundles         bool       `json:"enable_bundles" toml:"enable_bundles"`
 	EnableTransitiveRules bool       `json:"enable_transitive_rules" toml:"enable_transitive_rules"`
 	CleanSync             bool       `json:"clean_sync" toml:"clean_sync"`
@@ -51,9 +50,55 @@ type PreflightPayload struct {
 
 // EventPayload represents derived metadata for events uploaded with the UploadEvent endpoint.
 type EventPayload struct {
-	FileSHA  string          `json:"file_sha256"`
-	UnixTime float64         `json:"execution_time"`
-	Content  json.RawMessage `json:"-"`
+	FileSHA   string  `json:"file_sha256"`
+	UnixTime  float64 `json:"execution_time"`
+	EventInfo EventUploadEvent
+}
+
+// EventUploadRequest encapsulation of an /eventupload POST body sent by a Santa client
+type EventUploadRequest struct {
+	Events []EventUploadEvent `json:"events"`
+}
+
+// EventUploadEvent is a single event entry
+type EventUploadEvent struct {
+	CurrentSessions              []string       `json:"current_sessions"`
+	Decision                     string         `json:"decision"`
+	ExecutingUser                string         `json:"executing_user"`
+	ExecutionTime                float64        `json:"execution_time"`
+	FileBundleBinaryCount        int64          `json:"file_bundle_binary_count"`
+	FileBundleExecutableRelPath  string         `json:"file_bundle_executable_rel_path"`
+	FileBundleHash               string         `json:"file_bundle_hash"`
+	FileBundleHashMilliseconds   float64        `json:"file_bundle_hash_millis"`
+	FileBundleID                 string         `json:"file_bundle_id"`
+	FileBundleName               string         `json:"file_bundle_name"`
+	FileBundlePath               string         `json:"file_bundle_path"`
+	FileBundleShortVersionString string         `json:"file_bundle_version_string"`
+	FileBundleVersion            string         `json:"file_bundle_version"`
+	FileName                     string         `json:"file_name"`
+	FilePath                     string         `json:"file_path"`
+	FileSHA256                   string         `json:"file_sha256"`
+	LoggedInUsers                []string       `json:"logged_in_users"`
+	ParentName                   string         `json:"parent_name"`
+	ParentProcessID              int            `json:"ppid"`
+	ProcessID                    int            `json:"pid"`
+	QuarantineAgentBundleID      string         `json:"quarantine_agent_bundle_id"`
+	QuarantineDataUrl            string         `json:"quarantine_data_url"`
+	QuarantineRefererUrl         string         `json:"quarantine_referer_url"`
+	QuarantineTimestamp          float64        `json:"quarantine_timestamp"`
+	SigningChain                 []SigningEntry `json:"signing_chain"`
+	SigningID                    string         `json:"signing_id"`
+	TeamID                       string         `json:"team_id"`
+}
+
+// SigningEntry is optionally present when an event includes a binary that is signed
+type SigningEntry struct {
+	CertificateName    string `json:"cn"`
+	Organization       string `json:"org"`
+	OrganizationalUnit string `json:"ou"`
+	SHA256             string `json:"sha256"`
+	ValidFrom          int    `json:"valid_from"`
+	ValidUntil         int    `json:"valid_until"`
 }
 
 // RuleType represents a Santa rule type.

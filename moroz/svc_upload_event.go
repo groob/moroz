@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -25,7 +24,13 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 		}
 
 		eventPath := filepath.Join(eventDir, fmt.Sprintf("%f.json", ev.UnixTime))
-		if err := ioutil.WriteFile(eventPath, ev.Content, 0644); err != nil {
+
+		eventInfoJSON, err := json.Marshal(ev.EventInfo)
+		if err != nil {
+			return errors.Wrap(err, "marshal event info to json")
+		}
+
+		if err := os.WriteFile(eventPath, eventInfoJSON, 0644); err != nil {
 			return errors.Wrapf(err, "write event to path %s", eventPath)
 		}
 	}
@@ -65,9 +70,7 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 	}
 
 	// decode the JSON into individual log events.
-	var eventPayload = struct {
-		Events []json.RawMessage `json:"events"`
-	}{}
+	var eventPayload santa.EventUploadRequest
 
 	if err := json.NewDecoder(zr).Decode(&eventPayload); err != nil {
 		return nil, errors.Wrap(err, "decoding event upload request json")
@@ -76,10 +79,9 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 	var events []santa.EventPayload
 	for _, ev := range eventPayload.Events {
 		var payload santa.EventPayload
-		if err := json.Unmarshal(ev, &payload); err != nil {
-			return nil, errors.Wrap(err, "decoding file sha from event upload json")
-		}
-		payload.Content = ev
+		payload.EventInfo = ev
+		payload.FileSHA = ev.FileSHA256
+		payload.UnixTime = ev.ExecutionTime
 		events = append(events, payload)
 	}
 
@@ -89,13 +91,15 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 
 func (mw logmw) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) (err error) {
 	defer func(begin time.Time) {
-		_ = mw.logger.Log(
-			"method", "UploadEvent",
-			"machine_id", machineID,
-			"event_count", len(events),
-			"err", err,
-			"took", time.Since(begin),
-		)
+		for _, ev := range events {
+			_ = mw.logger.Log(
+				"method", "UploadEvent",
+				"machine_id", machineID,
+				"event", ev.EventInfo,
+				"err", err,
+				"took", time.Since(begin),
+			)
+		}
 	}(time.Now())
 
 	err = mw.next.UploadEvent(ctx, machineID, events)
