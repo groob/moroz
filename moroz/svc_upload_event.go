@@ -30,6 +30,8 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 			return errors.Wrap(err, "marshal event info to json")
 		}
 
+		eventInfoJSON = append(eventInfoJSON, "\n"...)
+
 		if err := os.WriteFile(eventPath, eventInfoJSON, 0644); err != nil {
 			return errors.Wrapf(err, "write event to path %s", eventPath)
 		}
