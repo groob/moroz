@@ -37,15 +37,20 @@ type Preflight struct {
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.
 type PreflightPayload struct {
-	OSBuild              string     `json:"os_build"`
-	SantaVersion         string     `json:"santa_version"`
+	SerialNumber         string     `json:"serial_num"`
 	Hostname             string     `json:"hostname"`
 	OSVersion            string     `json:"os_version"`
-	CertificateRuleCount int        `json:"certificate_rule_count"`
-	BinaryRuleCount      int        `json:"binary_rule_count"`
-	ClientMode           ClientMode `json:"client_mode"`
-	SerialNumber         string     `json:"serial_num"`
+	OSBuild              string     `json:"os_build"`
+	ModelIdentifier      string     `json:"model_identifier"`
+	SantaVersion         string     `json:"santa_version"`
 	PrimaryUser          string     `json:"primary_user"`
+	BinaryRuleCount      int        `json:"binary_rule_count"`
+	CertificateRuleCount int        `json:"certificate_rule_count"`
+	CompilerRuleCount    int        `json:"compiler_rule_count"`
+	TransitiveRuleCount  int        `json:"transitive_rule_count"`
+	TeamIDRuleCount      int        `json:"teamid_rule_count"`
+	ClientMode           ClientMode `json:"client_mode"`
+	RequestCleanSync     bool       `json:"request_clean_sync"`
 }
 
 // EventPayload represents derived metadata for events uploaded with the UploadEvent endpoint.
