@@ -66,6 +66,7 @@ func (mw logmw) Preflight(ctx context.Context, machineID string, p santa.Preflig
 		_ = mw.logger.Log(
 			"method", "Preflight",
 			"machine_id", machineID,
+			"preflight_payload", p,
 			"err", err,
 			"took", time.Since(begin),
 		)
