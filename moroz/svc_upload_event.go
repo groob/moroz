@@ -17,6 +17,9 @@ import (
 )
 
 func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error {
+	if !svc.flPersistEvents {
+		return nil
+	}
 	for _, ev := range events {
 		eventDir := filepath.Join(svc.eventDir, ev.FileSHA, machineID)
 		if err := os.MkdirAll(eventDir, 0700); err != nil {

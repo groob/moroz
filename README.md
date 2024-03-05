@@ -91,6 +91,8 @@ Usage of moroz:
     	path to config folder (default "../../configs")
   -event-logfile string
     	path to file for saving uploaded events (default "/tmp/santa_events")
+  -persist-events
+      Enable writing events to disk (default `false`)
   -http-addr string
     	http address ex: -http-addr=:8080 (default ":8080")
   -tls-cert string

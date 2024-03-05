@@ -42,14 +42,15 @@ The latest version of santa is available on the github repo page:
 
 func main() {
 	var (
-		flTLSCert = flag.String("tls-cert", env.String("MOROZ_TLS_CERT", "server.crt"), "path to TLS certificate")
-		flTLSKey  = flag.String("tls-key", env.String("MOROZ_TLS_KEY", "server.key"), "path to TLS private key")
-		flAddr    = flag.String("http-addr", env.String("MOROZ_HTTP_ADDRESS", ":8080"), "http address ex: -http-addr=:8080")
-		flConfigs = flag.String("configs", env.String("MOROZ_CONFIGS", "../../configs"), "path to config folder")
-		flEvents  = flag.String("event-dir", env.String("MOROZ_EVENT_DIR", "/tmp/santa_events"), "Path to root directory where events will be stored.")
-		flVersion = flag.Bool("version", false, "print version information")
-		flDebug   = flag.Bool("debug", false, "log at a debug level by default.")
-		flUseTLS  = flag.Bool("use-tls", true, "I promise I terminated TLS elsewhere when changing this")
+		flTLSCert       = flag.String("tls-cert", env.String("MOROZ_TLS_CERT", "server.crt"), "path to TLS certificate")
+		flTLSKey        = flag.String("tls-key", env.String("MOROZ_TLS_KEY", "server.key"), "path to TLS private key")
+		flAddr          = flag.String("http-addr", env.String("MOROZ_HTTP_ADDRESS", ":8080"), "http address ex: -http-addr=:8080")
+		flConfigs       = flag.String("configs", env.String("MOROZ_CONFIGS", "../../configs"), "path to config folder")
+		flEvents        = flag.String("event-dir", env.String("MOROZ_EVENT_DIR", "/tmp/santa_events"), "Path to root directory where events will be stored.")
+		flPersistEvents = flag.Bool("persist-events", env.Bool("MOROZ_WRITE_EVENTS", false), "Enable writing events to disk. Disabled by default.")
+		flVersion       = flag.Bool("version", false, "print version information")
+		flDebug         = flag.Bool("debug", false, "log at a debug level by default.")
+		flUseTLS        = flag.Bool("use-tls", true, "I promise I terminated TLS elsewhere when changing this")
 	)
 	flag.Parse()
 
@@ -73,7 +74,7 @@ func main() {
 	repo := santaconfig.NewFileRepo(*flConfigs)
 	var svc moroz.Service
 	{
-		s, err := moroz.NewService(repo, *flEvents)
+		s, err := moroz.NewService(repo, *flEvents, *flPersistEvents)
 		if err != nil {
 			logutil.Fatal(logger, err)
 		}
