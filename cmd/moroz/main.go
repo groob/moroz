@@ -47,7 +47,7 @@ func main() {
 		flAddr          = flag.String("http-addr", env.String("MOROZ_HTTP_ADDRESS", ":8080"), "http address ex: -http-addr=:8080")
 		flConfigs       = flag.String("configs", env.String("MOROZ_CONFIGS", "../../configs"), "path to config folder")
 		flEvents        = flag.String("event-dir", env.String("MOROZ_EVENT_DIR", "/tmp/santa_events"), "Path to root directory where events will be stored.")
-		flPersistEvents = flag.Bool("persist-events", env.Bool("MOROZ_WRITE_EVENTS", false), "Enable writing events to disk. Disabled by default.")
+		flPersistEvents = flag.Bool("persist-events", env.Bool("MOROZ_WRITE_EVENTS", true), "Enable or disable event persistence to disk. Defaults to enabled.")
 		flVersion       = flag.Bool("version", false, "print version information")
 		flDebug         = flag.Bool("debug", false, "log at a debug level by default.")
 		flUseTLS        = flag.Bool("use-tls", true, "I promise I terminated TLS elsewhere when changing this")
