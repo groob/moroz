@@ -92,7 +92,7 @@ Usage of moroz:
   -event-logfile string
     	path to file for saving uploaded events (default "/tmp/santa_events")
   -persist-events
-      Enable writing events to disk (default `false`)
+      Enable writing events to disk (default `true`)
   -http-addr string
     	http address ex: -http-addr=:8080 (default ":8080")
   -tls-cert string
