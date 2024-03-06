@@ -14,12 +14,13 @@ type ConfigStore interface {
 }
 
 type SantaService struct {
-	global   santa.Config
-	repo     ConfigStore
-	eventDir string
+	global          santa.Config
+	repo            ConfigStore
+	eventDir        string
+	flPersistEvents bool
 }
 
-func NewService(ds ConfigStore, eventDir string) (*SantaService, error) {
+func NewService(ds ConfigStore, eventDir string, flPersistEvents bool) (*SantaService, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	global, err := ds.Config(ctx, "global")
@@ -27,9 +28,10 @@ func NewService(ds ConfigStore, eventDir string) (*SantaService, error) {
 		return nil, err
 	}
 	return &SantaService{
-		global:   global,
-		repo:     ds,
-		eventDir: eventDir,
+		global:          global,
+		repo:            ds,
+		eventDir:        eventDir,
+		flPersistEvents: flPersistEvents,
 	}, nil
 }
 
