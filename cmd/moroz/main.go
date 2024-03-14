@@ -29,7 +29,7 @@ by using the commands below:
 
 Add the santa hostname to your hosts file.
 
-	sudo echo "127.0.0.1 santa" >> /etc/hosts
+	sudo echo "127.0.0.1 moroz.local" >> /etc/hosts
 
 And then, add the cert to roots.
 
