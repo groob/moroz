@@ -1,6 +1,6 @@
 module github.com/groob/moroz
 
-go 1.20
+go 1.23.1
 
 require (
 	github.com/BurntSushi/toml v0.2.0
