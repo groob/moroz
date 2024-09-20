@@ -40,11 +40,11 @@ type Preflight struct {
 	CleanSync             bool       `json:"clean_sync" toml:"clean_sync,omitempty"`
 	FullSyncInterval      int        `json:"full_sync_interval" toml:"full_sync_interval"`
 	// TODO: add support for sync_type and deprecate clean_sync
-	// SyncType                 string     `json:"sync_type" toml:"sync_type,omitempty"`
+	//	SyncType                 string     `json:"sync_type" toml:"sync_type,omitempty"`
 	// TODO: add in support for the following fields
-	//BlockUSBMount            bool   `json:"block_usb_mount" toml:"block_usb_mount,omitempty"`
-	//RemountUSBMode           string `json:"remount_usb_mode" toml:"remount_usb_mode,omitempty"`
-	//OverrideFileAccessAction string `json:"override_file_access_action" toml:"override_file_access_action,omitempty"`
+	//	BlockUSBMount            bool   `json:"block_usb_mount" toml:"block_usb_mount,omitempty"`
+	//	RemountUSBMode           string `json:"remount_usb_mode" toml:"remount_usb_mode,omitempty"`
+	//	OverrideFileAccessAction string `json:"override_file_access_action" toml:"override_file_access_action,omitempty"`
 }
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.
