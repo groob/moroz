@@ -40,7 +40,7 @@ BUILD_VERSION = "\
 
 
 gomodcheck: 
-	@go help mod > /dev/null || (@echo micromdm requires Go version 1.11 or higher && exit 1)
+	@go help mod > /dev/null || (@echo micromdm requires Go version 1.23 or higher && exit 1)
 
 deps: gomodcheck
 	@go mod download

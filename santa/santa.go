@@ -14,15 +14,21 @@ type Config struct {
 }
 
 // Rule is a Santa rule.
-// Full documentation: https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/details/rules.md
+// https://github.com/google/santa/blob/ff0efe952b2456b52fad2a40e6eedb0931e6bdf7/docs/development/sync-protocol.md#rules-objects
 type Rule struct {
 	RuleType      RuleType `json:"rule_type" toml:"rule_type"`
 	Policy        Policy   `json:"policy" toml:"policy"`
 	Identifier    string   `json:"identifier" toml:"identifier"`
 	CustomMessage string   `json:"custom_msg,omitempty" toml:"custom_msg,omitempty"`
+	CustomUrl     string   `json:"custom_url,omitempty" toml:"custom_url,omitempty"`
+	// TODO: add support for the following fields
+	// CreationTime          float64  `json:"creation_time,omitempty" toml:"creation_time,omitempty"`
+	// FileBundleBinaryCount int      `json:"file_bundle_binary_count,omitempty" toml:"file_bundle_binary_count,omitempty"`
+	// FileBundleHash        string   `json:"file_bundle_hash,omitempty" toml:"file_bundle_hash,omitempty"`
 }
 
 // Preflight represents sync response sent to a Santa client by the sync server.
+// https://github.com/google/santa/blob/344a35aaf63c24a56f7a021ce18ecab090584da3/docs/development/sync-protocol.md#preflight-response
 type Preflight struct {
 	ClientMode            ClientMode `json:"client_mode" toml:"client_mode"`
 	BlockedPathRegex      string     `json:"blocked_path_regex" toml:"blocked_path_regex"`
@@ -31,11 +37,18 @@ type Preflight struct {
 	EnableAllEventUpload  bool       `json:"enable_all_event_upload" toml:"enable_all_event_upload"`
 	EnableBundles         bool       `json:"enable_bundles" toml:"enable_bundles"`
 	EnableTransitiveRules bool       `json:"enable_transitive_rules" toml:"enable_transitive_rules"`
-	CleanSync             bool       `json:"clean_sync" toml:"clean_sync"`
+	CleanSync             bool       `json:"clean_sync" toml:"clean_sync,omitempty"`
 	FullSyncInterval      int        `json:"full_sync_interval" toml:"full_sync_interval"`
+	// TODO: add support for sync_type and deprecate clean_sync
+	//	SyncType                 string     `json:"sync_type" toml:"sync_type,omitempty"`
+	// TODO: add in support for the following fields
+	//	BlockUSBMount            bool   `json:"block_usb_mount" toml:"block_usb_mount,omitempty"`
+	//	RemountUSBMode           string `json:"remount_usb_mode" toml:"remount_usb_mode,omitempty"`
+	//	OverrideFileAccessAction string `json:"override_file_access_action" toml:"override_file_access_action,omitempty"`
 }
 
 // A PreflightPayload represents the request sent by a santa client to the sync server.
+// https://github.com/google/santa/blob/344a35aaf63c24a56f7a021ce18ecab090584da3/docs/development/sync-protocol.md#preflight-request
 type PreflightPayload struct {
 	SerialNumber         string     `json:"serial_num"`
 	Hostname             string     `json:"hostname"`
@@ -49,8 +62,23 @@ type PreflightPayload struct {
 	CompilerRuleCount    int        `json:"compiler_rule_count"`
 	TransitiveRuleCount  int        `json:"transitive_rule_count"`
 	TeamIDRuleCount      int        `json:"teamid_rule_count"`
+	SigningIDRuleCount   int        `json:"signingid_rule_count"`
+	CdHashRuleCount      int        `json:"cdhash_rule_count"`
 	ClientMode           ClientMode `json:"client_mode"`
 	RequestCleanSync     bool       `json:"request_clean_sync"`
+}
+
+// Postflight represents sync response sent to a Santa client by the sync server.
+// Currently, this is a no-op.
+type Postflight struct {
+	NoOp struct{}
+}
+
+// A PostflightPayload represents the request sent by a santa client to the sync server.
+// https://github.com/google/santa/blob/344a35aaf63c24a56f7a021ce18ecab090584da3/docs/development/sync-protocol.md#postflight-request
+type PostflightPayload struct {
+	RulesReceived  int `json:"rules_received"`
+	RulesProcessed int `json:"rules_processed"`
 }
 
 // EventPayload represents derived metadata for events uploaded with the UploadEvent endpoint.
@@ -66,6 +94,7 @@ type EventUploadRequest struct {
 }
 
 // EventUploadEvent is a single event entry
+// https://github.com/google/santa/blob/344a35aaf63c24a56f7a021ce18ecab090584da3/docs/development/sync-protocol.md#event-objects
 type EventUploadEvent struct {
 	CurrentSessions              []string       `json:"current_sessions"`
 	Decision                     string         `json:"decision"`
@@ -94,6 +123,7 @@ type EventUploadEvent struct {
 	SigningChain                 []SigningEntry `json:"signing_chain"`
 	SigningID                    string         `json:"signing_id"`
 	TeamID                       string         `json:"team_id"`
+	CdHash                       string         `json:"cd_hash"`
 }
 
 // SigningEntry is optionally present when an event includes a binary that is signed
@@ -128,6 +158,15 @@ const (
 	// with the Apple developer certificate used to sign the application.
 	// ie. EQHXZ8M8AV:com.google.Chrome
 	SigningID
+
+	// CDHash rules use a binary's code directory hash as an identifier. This is the most specific rule in Santa.
+	// The code directory hash identifies a specific version of a program, similar to a file hash.
+	// Note that the operating system evaluates the cdhash lazily, only verifying pages of code when they're mapped in.
+	// This means that it is possible for a file hash to change, but a binary could still execute as long as modified
+	// pages are not mapped in. Santa only considers CDHash rules for processes that have CS_KILL or CS_HARD
+	// codesigning flags set to ensure that a process will be killed if the CDHash was tampered with
+	// (assuming the system has SIP enabled).
+	CdHash
 )
 
 func (r *RuleType) UnmarshalText(text []byte) error {
@@ -140,6 +179,8 @@ func (r *RuleType) UnmarshalText(text []byte) error {
 		*r = TeamID
 	case "SIGNINGID":
 		*r = SigningID
+	case "CDHASH":
+		*r = CdHash
 	default:
 		return errors.Errorf("unknown rule_type value %q", t)
 	}
@@ -156,6 +197,8 @@ func (r RuleType) MarshalText() ([]byte, error) {
 		return []byte("TEAMID"), nil
 	case SigningID:
 		return []byte("SIGNINGID"), nil
+	case CdHash:
+		return []byte("CDHASH"), nil
 	default:
 		return nil, errors.Errorf("unknown rule_type %d", r)
 	}

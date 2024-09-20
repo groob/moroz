@@ -33,6 +33,12 @@ full_sync_interval = 600
   custom_msg = "allow google chrome signing id"
 
 [[rules]]
+  rule_type = "CDHASH"
+  policy = "ALLOWLIST"
+  identifier = "935bc0fb5ca31ed7e508b9c5883630fb5b96793a"
+  custom_msg = "allow google chrome cdhash"
+
+[[rules]]
   rule_type = "BINARY"
   policy = "ALLOWLIST_COMPILER"
   identifier = "60d79d1763fefb56716e4a36284300523eb4335c3726fb9070fa83074b02279e"
@@ -61,3 +67,10 @@ full_sync_interval = 600
   policy = "ALLOWLIST_COMPILER"
   identifier = "d867fca68bbd7db18e9ced231800e7535bc067852b1e530987bb7f57b5e3a02c"
   custom_msg = "allowlist go compiler component"
+
+[[rules]]
+  rule_type = "BINARY"
+  policy = "BLOCKLIST"
+  identifier = "d867fca68bbd7db18e9ced231800e7535bc067852b1e530987bb7f57b5e3a02c"
+  custom_msg = "deny go compiler component"
+  custom_url = "https://go.dev"

@@ -15,10 +15,6 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 		t.Errorf("have client_mode %d, want %d\n", have, want)
 	}
 
-	if have, want := conf.CleanSync, true; have != want {
-		t.Errorf("have clean_sync %t, want %t\n", have, want)
-	}
-
 	if have, want := conf.FullSyncInterval, 600; have != want {
 		t.Errorf("have full_sync_interval %d, want %d\n", have, want)
 	}
@@ -43,6 +39,10 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 		t.Errorf("have rule_type %d, want %d\n", have, want)
 	}
 
+	if have, want := conf.Rules[4].RuleType, CdHash; have != want {
+		t.Errorf("have rule_type %d, want %d\n", have, want)
+	}
+
 	if have, want := conf.Rules[0].Policy, Blocklist; have != want {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}
@@ -51,12 +51,16 @@ func TestConfigMarshalUnmarshal(t *testing.T) {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}
 
-	if have, want := conf.Rules[4].Policy, AllowlistCompiler; have != want {
+	if have, want := conf.Rules[5].Policy, AllowlistCompiler; have != want {
 		t.Errorf("have policy %d, want %d\n", have, want)
 	}
 
-	if have, want := conf.Rules[5].Policy, Remove; have != want {
+	if have, want := conf.Rules[6].Policy, Remove; have != want {
 		t.Errorf("have policy %d, want %d\n", have, want)
+	}
+
+	if have, want := conf.Rules[10].CustomUrl, "https://go.dev"; have != want {
+		t.Errorf("have custom_url %s, want %s\n", have, want)
 	}
 }
 

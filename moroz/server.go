@@ -23,7 +23,7 @@ func AddHTTPRoutes(r *mux.Router, e Endpoints, logger log.Logger) {
 	// POST     /v1/santa/preflight/:id			preflight request.
 	// POST     /v1/santa/ruledownload/:id		request rule updates.
 	// POST     /v1/santa/eventupload/:id		upload event.
-	// POST     /v1/santa/postflight/:id		postflight request. Implemented as a no-op.
+	// POST     /v1/santa/postflight/:id		postflight request.
 
 	r.Methods("POST").Path("/v1/santa/preflight/{id}").Handler(httptransport.NewServer(
 		e.PreflightEndpoint,
@@ -46,8 +46,11 @@ func AddHTTPRoutes(r *mux.Router, e Endpoints, logger log.Logger) {
 		options...,
 	))
 
-	r.Methods("POST").Path("/v1/santa/postflight/{id}").Handler(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {},
+	r.Methods("POST").Path("/v1/santa/postflight/{id}").Handler(httptransport.NewServer(
+		e.PostflightEndpoint,
+		decodePostflightRequest,
+		encodeResponse,
+		options...,
 	))
 
 }
