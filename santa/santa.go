@@ -123,7 +123,7 @@ type EventUploadEvent struct {
 	SigningChain                 []SigningEntry `json:"signing_chain"`
 	SigningID                    string         `json:"signing_id"`
 	TeamID                       string         `json:"team_id"`
-	CdHash                       string         `json:"cd_hash"`
+	CdHash                       string         `json:"cdhash"`
 }
 
 // SigningEntry is optionally present when an event includes a binary that is signed
