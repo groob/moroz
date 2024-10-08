@@ -118,7 +118,7 @@ Generate a self-signed certificate which will be used by Santa clients and the s
 Add the Santa CN to your hosts file.
 
 ```
-sudo echo "127.0.0.1 santa" >> /etc/hosts
+sudo echo "127.0.0.1 moroz.local" >> /etc/hosts
 ```
 
 Add the self-signed cert to your system roots. 
@@ -132,6 +132,8 @@ The latest version of Santa is available on the GitHub repo page: https://github
 
 ## Configure Santa:
 You will need to provide the `SyncBaseURL` settings. See the [Santa repo](https://github.com/google/santa/blob/01df4623c7c534568ca3d310129455ff71cc3eef/Docs/deployment/configuration.md#important) for a complete guide on all the client configuration options.
+
+A likely value for local testing as in the Quickstart will be: `https://moroz.local:8080/v1/santa/`
 
 ## Start moroz:
 Assumes you have the `./server.crt` and `./server.key` files.
