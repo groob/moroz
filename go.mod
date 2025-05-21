@@ -14,6 +14,7 @@ require (
 require (
 	github.com/go-logfmt/logfmt v0.3.0 // indirect
 	github.com/go-stack/stack v1.7.0 // indirect
+	github.com/goccy/go-yaml v1.17.1 // indirect
 	github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f // indirect
 	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
 	golang.org/x/net v0.0.0-20180124060956-0ed95abb35c4 // indirect

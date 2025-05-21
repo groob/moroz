@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/endpoint"
+	"github.com/goccy/go-yaml"
 	"github.com/pkg/errors"
 
 	"github.com/groob/moroz/santa"
@@ -75,7 +76,7 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 	// decode the JSON into individual log events.
 	var eventPayload santa.EventUploadRequest
 
-	if err := json.NewDecoder(zr).Decode(&eventPayload); err != nil {
+	if err := yaml.NewDecoder(zr).Decode(&eventPayload); err != nil {
 		return nil, errors.Wrap(err, "decoding event upload request json")
 	}
 
