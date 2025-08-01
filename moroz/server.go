@@ -53,6 +53,9 @@ func AddHTTPRoutes(r *mux.Router, e Endpoints, logger log.Logger) {
 		options...,
 	))
 
+	r.Methods("GET").Path("/health").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 }
 
 // errBadRoute is used for mux errors

@@ -140,5 +140,13 @@ Assumes you have the `./server.crt` and `./server.key` files.
 moroz -configs /path/to/configs/folder
 ```
 
+# Kubernetes Deployment
+
+Deploy to Kubernetes using kustomize:
+
+```bash
+kubectl apply -k deploy/
+```
+
 ---
 moroz icon by [Souvik Bhattacharjee](https://thenounproject.com/souvik502/) from the [Noun Project](https://thenounproject.com/).

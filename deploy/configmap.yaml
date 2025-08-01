@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moroz-config
+data:
+  global.toml: |
+    client_mode = "MONITOR"
+    # blocked_path_regex = "^(?:/Users)/.*"
+    # allowed_path_regex = "^(?:/Users)/.*"
+    batch_size = 100
+    enable_all_event_upload = true
+    enable_bundles = false
+    enable_transitive_rules = true
+    clean_sync = true
+    full_sync_interval = 600
+    
+    [[rules]]
+    rule_type = "BINARY"
+    policy = "BLOCKLIST"
+    identifier = "2dc104631939b4bdf5d6bccab76e166e37fe5e1605340cf68dab919df58b8eda"
+    custom_msg = "blocklist firefox"
+    
+    [[rules]]
+    rule_type = "TEAMID"
+    policy = "ALLOWLIST"
+    identifier = "EQHXZ8M8AV"
+    custom_msg = "allow google team id"
+    
+    [[rules]]
+    rule_type = "SIGNINGID"
+    policy = "ALLOWLIST"
+    identifier = "EQHXZ8M8AV:com.google.Chrome"
+    custom_msg = "allow google chrome signing id"
+    
+    [[rules]]
+    rule_type = "SIGNINGID"
+    policy = "BLOCKLIST"
+    identifier = "platform:com.apple.BluetoothFileExchange"
+    custom_msg = "block bluetooth file exchange.app"
+    
+    [[rules]]
+    rule_type = "BINARY"
+    policy = "ALLOWLIST_COMPILER"
+    identifier = "60d79d1763fefb56716e4a36284300523eb4335c3726fb9070fa83074b02279e"
+    custom_msg = "allowlist go compiler component"
+    
+    [[rules]]
+    rule_type = "BINARY"
+    policy = "ALLOWLIST_COMPILER"
+    identifier = "8e78770685d51324b78588fddc6afc2f8b6cef5231c27eeb97363cc437fec18a"
+    custom_msg = "allowlist go compiler component"
+    
+    [[rules]]
+    rule_type = "BINARY"
+    policy = "ALLOWLIST_COMPILER"
+    identifier = "e88617cfd62809fb10e213c459a52f48e028fae4321e41134c4797465af886b6"
+    custom_msg = "allowlist go compiler component"
+    
+    [[rules]]
+    rule_type = "BINARY"
+    policy = "ALLOWLIST_COMPILER"
+    identifier = "d867fca68bbd7db18e9ced231800e7535bc067852b1e530987bb7f57b5e3a02c"
+    custom_msg = "allowlist go compiler component"
