@@ -89,16 +89,20 @@ See `moroz -h` for a full list of options.
 Usage of moroz:
   -configs string
     	path to config folder (default "../../configs")
-  -event-logfile string
-    	path to file for saving uploaded events (default "/tmp/santa_events")
-  -persist-events
-      Enable writing events to disk (default `true`)
+  -debug
+    	log at a debug level by default.
+  -event-dir string
+    	Path to root directory where events will be stored. (default "/tmp/santa_events")
   -http-addr string
     	http address ex: -http-addr=:8080 (default ":8080")
+  -persist-events
+    	Enable or disable event persistence to disk. Defaults to enabled. (default true)
   -tls-cert string
     	path to TLS certificate (default "server.crt")
   -tls-key string
     	path to TLS private key (default "server.key")
+  -use-tls
+    	I promise I terminated TLS elsewhere when changing this (default true)
   -version
     	print version information
 ```
