@@ -5,6 +5,7 @@ go 1.23.1
 require (
 	github.com/BurntSushi/toml v0.2.0
 	github.com/go-kit/kit v0.4.0
+	github.com/goccy/go-yaml v1.17.1
 	github.com/gorilla/mux v1.6.1
 	github.com/kolide/kit v0.0.0-20180912215818-0c28f72eb2b0
 	github.com/oklog/run v1.0.0

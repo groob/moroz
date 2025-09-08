@@ -3,9 +3,10 @@ package moroz
 import (
 	"compress/zlib"
 	"context"
-	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/goccy/go-yaml"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/groob/moroz/santa"
@@ -50,7 +51,7 @@ func decodePostflightRequest(ctx context.Context, r *http.Request) (interface{},
 		return nil, err
 	}
 	req := postflightRequest{MachineID: id}
-	if err := json.NewDecoder(zr).Decode(&req.payload); err != nil {
+	if err := yaml.NewDecoder(zr).Decode(&req.payload); err != nil {
 		return nil, err
 	}
 	return req, nil
