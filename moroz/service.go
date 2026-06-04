@@ -39,6 +39,7 @@ type Service interface {
 	Preflight(ctx context.Context, machineID string, p santa.PreflightPayload) (*santa.Preflight, error)
 	RuleDownload(ctx context.Context, machineID string) ([]santa.Rule, error)
 	UploadEvent(ctx context.Context, machineID string, events []santa.EventPayload) error
+	UploadFileAccessEvents(ctx context.Context, machineID string, events []santa.FileAccessEvent) error
 	Postflight(ctx context.Context, machineID string, p santa.PostflightPayload) (*santa.Postflight, error)
 }
 

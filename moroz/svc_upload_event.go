@@ -40,9 +40,37 @@ func (svc *SantaService) UploadEvent(ctx context.Context, machineID string, even
 	return nil
 }
 
+// UploadFileAccessEvents persists File Access Authorization (FAA) events sent in
+// an /eventupload request. They have no file SHA, so they are stored under a
+// dedicated file_access/{machineID} directory keyed by access time.
+func (svc *SantaService) UploadFileAccessEvents(ctx context.Context, machineID string, events []santa.FileAccessEvent) error {
+	if !svc.flPersistEvents {
+		return nil
+	}
+	for _, ev := range events {
+		eventDir := filepath.Join(svc.eventDir, "file_access", machineID)
+		if err := os.MkdirAll(eventDir, 0700); err != nil {
+			return errors.Wrapf(err, "create file access event directory %s", eventDir)
+		}
+
+		eventPath := filepath.Join(eventDir, fmt.Sprintf("%f.json", ev.AccessTime))
+
+		eventJSON, err := json.Marshal(ev)
+		if err != nil {
+			return errors.Wrap(err, "marshal file access event to json")
+		}
+
+		if err := os.WriteFile(eventPath, eventJSON, 0644); err != nil {
+			return errors.Wrapf(err, "write file access event to path %s", eventPath)
+		}
+	}
+	return nil
+}
+
 type eventRequest struct {
-	MachineID string
-	events    []santa.EventPayload
+	MachineID        string
+	events           []santa.EventPayload
+	fileAccessEvents []santa.FileAccessEvent
 }
 
 type eventResponse struct {
@@ -54,7 +82,10 @@ func (r eventResponse) Failed() error { return r.Err }
 func makeEventUploadEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(eventRequest)
-		err := svc.UploadEvent(ctx, req.MachineID, req.events)
+		if err := svc.UploadEvent(ctx, req.MachineID, req.events); err != nil {
+			return eventResponse{Err: err}, nil
+		}
+		err := svc.UploadFileAccessEvents(ctx, req.MachineID, req.fileAccessEvents)
 		return eventResponse{Err: err}, nil
 	}
 }
@@ -88,7 +119,11 @@ func decodeEventUpload(ctx context.Context, r *http.Request) (interface{}, error
 		events = append(events, payload)
 	}
 
-	req := eventRequest{MachineID: id, events: events}
+	req := eventRequest{
+		MachineID:        id,
+		events:           events,
+		fileAccessEvents: eventPayload.FileAccessEvents,
+	}
 	return req, nil
 }
 
@@ -106,5 +141,24 @@ func (mw logmw) UploadEvent(ctx context.Context, machineID string, events []sant
 	}(time.Now())
 
 	err = mw.next.UploadEvent(ctx, machineID, events)
+	return
+}
+
+func (mw logmw) UploadFileAccessEvents(ctx context.Context, machineID string, events []santa.FileAccessEvent) (err error) {
+	defer func(begin time.Time) {
+		for _, ev := range events {
+			_ = mw.logger.Log(
+				"method", "UploadFileAccessEvents",
+				"machine_id", machineID,
+				"rule_name", ev.RuleName,
+				"target", ev.Target,
+				"decision", ev.Decision,
+				"err", err,
+				"took", time.Since(begin),
+			)
+		}
+	}(time.Now())
+
+	err = mw.next.UploadFileAccessEvents(ctx, machineID, events)
 	return
 }

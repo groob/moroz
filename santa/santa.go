@@ -90,7 +90,8 @@ type EventPayload struct {
 
 // EventUploadRequest encapsulation of an /eventupload POST body sent by a Santa client
 type EventUploadRequest struct {
-	Events []EventUploadEvent `json:"events"`
+	Events           []EventUploadEvent `json:"events"`
+	FileAccessEvents []FileAccessEvent  `json:"file_access_events"`
 }
 
 // EventUploadEvent is a single event entry
@@ -134,6 +135,32 @@ type SigningEntry struct {
 	SHA256             string `json:"sha256"`
 	ValidFrom          int    `json:"valid_from"`
 	ValidUntil         int    `json:"valid_until"`
+}
+
+// FileAccessEvent is a single File Access Authorization (FAA) policy violation
+// uploaded with the UploadEvent endpoint.
+// https://buf.build/northpolesec/protos/docs/main:santa.sync.v1#santa.sync.v1.FileAccessEvent
+type FileAccessEvent struct {
+	RuleVersion  string              `json:"rule_version"`
+	RuleName     string              `json:"rule_name"`
+	Target       string              `json:"target"`
+	ProcessChain []FileAccessProcess `json:"process_chain"`
+	AccessTime   float64             `json:"access_time"`
+	Decision     string              `json:"decision"`
+}
+
+// FileAccessProcess describes a single process in the chain that triggered a
+// FileAccessEvent. The first process in the chain is the process that triggered
+// the event; each subsequent process is the parent of the previous one.
+// https://buf.build/northpolesec/protos/docs/main:santa.sync.v1#santa.sync.v1.Process
+type FileAccessProcess struct {
+	FilePath     string         `json:"file_path"`
+	CdHash       string         `json:"cdhash"`
+	FileSHA256   string         `json:"file_sha256"`
+	SigningID    string         `json:"signing_id"`
+	TeamID       string         `json:"team_id"`
+	ProcessID    int            `json:"pid"`
+	SigningChain []SigningEntry `json:"signing_chain"`
 }
 
 // RuleType represents a Santa rule type.
